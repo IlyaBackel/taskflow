@@ -27,17 +27,12 @@ export default function Register() {
             return;
         }
 
-        // Если пользователь успешно зарегистрирован
         if (authData.user) {
-            // Проверяем, нужно ли подтверждение email
             if (authData.user.identities?.length === 0) {
                 setError('User already exists');
                 setIsLoading(false);
                 return;
             }
-
-            // Если email подтверждение не требуется (или уже подтверждён)
-            // можно перенаправить на страницу с досками
             navigate('/boards');
         }
     };

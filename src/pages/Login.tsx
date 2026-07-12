@@ -22,7 +22,6 @@ export default function Login() {
             setError(error.message);
             setIsLoading(false);
         } else {
-            // Перенаправляем на страницу с досками
             navigate('/boards');
         }
     };

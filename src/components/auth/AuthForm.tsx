@@ -1,8 +1,8 @@
-// src/components/auth/AuthForm.tsx
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authSchema, type AuthFormData } from '../../schemas/auth.schema';
 import Input from '../shared/Input';
+import GoogleSignInButton from './GoogleOAuthButton';
 
 interface AuthFormProps {
     mode: 'login' | 'register';
@@ -62,6 +62,7 @@ export default function AuthForm({
             >
                 {isLoading ? 'Loading...' : buttonText}
             </button>
+            <GoogleSignInButton />
         </form>
     );
 }
