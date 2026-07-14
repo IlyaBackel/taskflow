@@ -28,15 +28,13 @@ export default function Login() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="w-full max-w-md space-y-8">
-                <div>
-                    <h1 className="text-center text-3xl font-bold text-gray-900">
-                        TaskFlow
-                    </h1>
-                    <p className="mt-2 text-center text-sm text-gray-600">
-                        Sign in to manage your tasks
-                    </p>
-                </div>
+            <div className=" w-full max-w-md space-y-8 items-center">
+
+                <h2 className="text-center text-2xl text-primary-text">Sign In</h2>
+
+                <h1 className='text-start text-primary-text text-3xl'>Welcome Back</h1>
+
+                <p className='text-lg font-light text-secondary-text'>Please Inter your email address and password for Login</p>
 
                 <AuthForm
                     mode="login"
@@ -45,9 +43,9 @@ export default function Login() {
                     error={error}
                 />
 
-                <p className="text-center text-sm text-gray-600">
-                    Don't have an account?{' '}
-                    <Link to="/register" className="text-blue-600 hover:text-blue-500 font-medium">
+                <p className="text-center text-lg text-gray-600">
+                    Not Registrar Yet?{' '}
+                    <Link to="/register" className="text-primary hover:text-primary-hover font-medium">
                         Sign up
                     </Link>
                 </p>

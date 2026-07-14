@@ -26,13 +26,11 @@ export default function AuthForm({
         resolver: zodResolver(authSchema),
     });
 
-    const title = mode === 'login' ? 'Sign In' : 'Create Account';
     const buttonText = mode === 'login' ? 'Sign In' : 'Sign Up';
 
     return (
-        <div className='flex flex-col gap-4 mx-auto'>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full max-w-md mx-auto">
-                <h2 className="text-2xl font-bold text-center">{title}</h2>
+        <div className='flex flex-col gap-10 mx-auto'>
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 w-full max-w-md mx-auto items-center">
 
                 {error && (
                     <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
@@ -59,13 +57,17 @@ export default function AuthForm({
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-primary text-white py-4 px-4 rounded-2xl text-xl hover:bg-primary-hover shadow-[#4e4c7d] shadow-lg w-[60%] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isLoading ? 'Loading...' : buttonText}
                 </button>
 
             </form>
-            <GoogleSignInButton />
+
+            <div className='flex flex-col items-center gap-4'>
+                <p className='text-center text-lg text-primary-text'>Sign in with</p>
+                <GoogleSignInButton />
+            </div>
         </div>
     );
 }
