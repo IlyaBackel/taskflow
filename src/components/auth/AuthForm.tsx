@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authSchema, type AuthFormData } from '../../schemas/auth.schema';
 import Input from '../shared/Input';
-import GoogleSignInButton from './GoogleOAuthButton';
+import GoogleOAuthButton from './GoogleOAuthButton';
 
 interface AuthFormProps {
     mode: 'login' | 'register';
@@ -57,7 +57,7 @@ export default function AuthForm({
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-primary text-white py-4 px-4 rounded-2xl text-xl hover:bg-primary-hover shadow-[#4e4c7d] shadow-lg w-[60%] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-primary w-[40%] sm:w-[50%] py-2 text-white sm:py-4 rounded-2xl text-md sm:text-xl hover:bg-primary-hover shadow-[#4e4c7d] shadow-lg  transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isLoading ? 'Loading...' : buttonText}
                 </button>
@@ -65,8 +65,8 @@ export default function AuthForm({
             </form>
 
             <div className='flex flex-col items-center gap-4'>
-                <p className='text-center text-lg text-primary-text'>Sign in with</p>
-                <GoogleSignInButton />
+                <p className='text-center text-sm sm:text-lg text-primary-text'>Sign in with</p>
+                <GoogleOAuthButton />
             </div>
         </div>
     );

@@ -28,14 +28,14 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-            <div className=" w-full max-w-md space-y-8 items-center">
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8 bg-primary-bg text-primary-text transition-colors duration-300">
+            <div className="w-full max-w-md space-y-6 sm:space-y-8">
 
-                <h2 className="text-center font-semibold text-2xl text-primary-text">Sign In</h2>
+                <h2 className="text-center font-semibold text-lg sm:text-2xl text-primary-text">Sign In</h2>
 
-                <h1 className='text-start text-primary-text text-3xl'>Welcome Back</h1>
+                <h1 className='text-start text-primary-text text-xl sm:text-3xl'>Welcome Back</h1>
 
-                <p className='text-lg font-light text-secondary-text'>Please Inter your email address and password for Login</p>
+                <p className='font-light text-sm sm:text-lg text-secondary-text'>Please Inter your email address and password for Login</p>
 
                 <AuthForm
                     mode="login"
@@ -46,7 +46,7 @@ export default function Login() {
 
                 <ThemeToggle />
 
-                <p className="text-center text-lg text-gray-600">
+                <p className="text-center text-sm sm:text-lg text-gray-600">
                     Not Registrar Yet?{' '}
                     <Link to="/register" className="text-primary hover:text-primary-hover font-medium">
                         Sign up

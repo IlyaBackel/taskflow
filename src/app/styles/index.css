@@ -14,6 +14,11 @@
   --toggle-thumb-bg: #ffffff;
   --toggle-sun-color: #eab308;
   --toggle-moon-color: #fde047;
+
+  --google-btn-bg: #f5f6fa;
+  --google-btn-text: #1f2937;
+  --google-btn-border: #d1d5db;
+  --google-btn-hover-bg: #f3f4f6;
 }
 
 .dark {
@@ -22,16 +27,26 @@
   --color-primary-text: #d8e2f2;
   --color-secondary-text: #b8bcc1;
   --color-placeholder: #6b7280;
+  --color-primary-hover: #5e5be6;
 
   --toggle-track-bg: #374151;
   --toggle-thumb-bg: #1f2937;
   --toggle-sun-color: #fde047;
   --toggle-moon-color: #fde047;
+
+  --google-btn-bg: #374151;
+  --google-btn-text: #f9fafb;
+  --google-btn-border: #767575;
+  --google-btn-hover-bg: #374151;
 }
 
 body {
   font-family: var(--font-family-sans);
   background-color: var(--color-primary-bg);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  padding: 0 3rem;
 }
 
 input::placeholder,
