@@ -10,7 +10,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     ({ label, error, ...props }, ref) => {
         return (
             <div className="flex flex-col gap-2 w-full">
-                <label className="text-md ml-3 font-medium text-gray-700">
+                <label className="text-md ml-3 font-medium text-primary-text">
                     {label}
                 </label>
                 <input

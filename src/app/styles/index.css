@@ -3,12 +3,39 @@
 
 @theme {
   --font-family-sans: 'Poppins', sans-serif;
+  --color-primary-bg: #f5f5f5;
   --color-primary: #756ef3;
   --color-primary-hover: #5e5be6;
   --color-primary-text: #002055;
   --color-secondary-text: #868d95;
+  --color-placeholder: #9ca3af;
+
+  --toggle-track-bg: #e5e7eb;
+  --toggle-thumb-bg: #ffffff;
+  --toggle-sun-color: #eab308;
+  --toggle-moon-color: #fde047;
+}
+
+.dark {
+  --color-primary: #7e7ae9;
+  --color-primary-bg: #2c2c34;
+  --color-primary-text: #d8e2f2;
+  --color-secondary-text: #b8bcc1;
+  --color-placeholder: #6b7280;
+
+  --toggle-track-bg: #374151;
+  --toggle-thumb-bg: #1f2937;
+  --toggle-sun-color: #fde047;
+  --toggle-moon-color: #fde047;
 }
 
 body {
   font-family: var(--font-family-sans);
+  background-color: var(--color-primary-bg);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
 }
