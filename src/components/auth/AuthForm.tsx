@@ -41,7 +41,7 @@ export default function AuthForm({
                 <Input
                     label="Email"
                     type="email"
-                    placeholder="your@email.com"
+                    placeholder="Enter your mail"
                     {...register('email')}
                     error={errors.email?.message}
                 />
@@ -49,7 +49,7 @@ export default function AuthForm({
                 <Input
                     label="Password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     {...register('password')}
                     error={errors.password?.message}
                 />

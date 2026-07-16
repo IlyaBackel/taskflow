@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import AuthForm from '../components/auth/AuthForm';
 import type { AuthFormData } from '../schemas/auth.schema';
+import ThemeToggle from '../components/shared/ThemeToggle';
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,7 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className=" w-full max-w-md space-y-8 items-center">
 
-                <h2 className="text-center text-2xl text-primary-text">Sign In</h2>
+                <h2 className="text-center font-semibold text-2xl text-primary-text">Sign In</h2>
 
                 <h1 className='text-start text-primary-text text-3xl'>Welcome Back</h1>
 
@@ -42,6 +43,8 @@ export default function Login() {
                     isLoading={isLoading}
                     error={error}
                 />
+
+                <ThemeToggle />
 
                 <p className="text-center text-lg text-gray-600">
                     Not Registrar Yet?{' '}
