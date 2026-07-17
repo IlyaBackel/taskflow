@@ -2,28 +2,30 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import AuthForm from '../components/auth/AuthForm';
-import type { AuthFormData } from '../schemas/auth.schema';
-import ThemeToggle from '../components/shared/ThemeToggle';
+import type { LoginFormData } from '../schemas/auth.schema';
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const handleLogin = async (data: AuthFormData) => {
-        setIsLoading(true);
-        setError(null);
+    const handleLogin = async (data: LoginFormData) => {
+        try {
+            setIsLoading(true);
+            setError(null);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email: data.email,
-            password: data.password,
-        });
+            const { error } = await supabase.auth.signInWithPassword({
+                email: data.email,
+                password: data.password,
+            });
 
-        if (error) {
-            setError(error.message);
+            error ? setError(error.message) : navigate('/');
+
+        } catch (err) {
+            console.error('Unexpected error during login:', err);
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
             setIsLoading(false);
-        } else {
-            navigate('/boards');
         }
     };
 
@@ -43,8 +45,6 @@ export default function Login() {
                     isLoading={isLoading}
                     error={error}
                 />
-
-                <ThemeToggle />
 
                 <p className="text-center text-sm sm:text-lg text-gray-600">
                     Not Registrar Yet?{' '}

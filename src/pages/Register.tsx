@@ -2,51 +2,68 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import AuthForm from '../components/auth/AuthForm';
-import type { AuthFormData } from '../schemas/auth.schema';
+import type { RegisterFormData } from '../schemas/auth.schema';
 
 export default function Register() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const handleRegister = async (data: AuthFormData) => {
-        setIsLoading(true);
-        setError(null);
+    const handleRegister = async (data: RegisterFormData) => {
+        try {
+            setIsLoading(true);
+            setError(null);
 
-        const { data: authData, error } = await supabase.auth.signUp({
-            email: data.email,
-            password: data.password,
-            options: {
-                emailRedirectTo: `${window.location.origin}/login`,
-            },
-        });
+            const { data: authData, error: signUpError } = await supabase.auth.signUp({
+                email: data.email,
+                password: data.password,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/login`,
+                },
+            });
 
-        if (error) {
-            setError(error.message);
-            setIsLoading(false);
-            return;
-        }
-
-        if (authData.user) {
-            if (authData.user.identities?.length === 0) {
-                setError('User already exists');
-                setIsLoading(false);
+            if (signUpError) {
+                setError(signUpError.message);
                 return;
             }
-            navigate('/boards');
+
+            const user = authData.user;
+            if (!user) {
+                setError('Registration failed');
+                return;
+            }
+
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert({ id: user.id, name: data.name }, { onConflict: 'id' });
+
+            if (profileError) {
+                setError(profileError.message);
+                return;
+            }
+
+            user.confirmed_at ? navigate('/boards') : navigate('/confirm-email', { state: { email: data.email } });
+
+        } catch (err) {
+            console.error('Unexpected error during registration:', err);
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="w-full max-w-md space-y-8">
-
-                <h2 className="text-center font-semibold text-2xl text-primary-text">Sign Up</h2>
-
-                <h1 className='text-start text-primary-text text-3xl'>Create Account</h1>
-
-                <p className='text-lg font-light text-secondary-text'>Please Inter your Informatioin and create your account</p>
-
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8 bg-primary-bg text-primary-text transition-colors duration-300">
+            <div className="w-full max-w-md space-y-6 sm:space-y-8">
+                <h2 className="text-center font-semibold text-lg sm:text-2xl text-primary-text">
+                    Sign Up
+                </h2>
+                <h1 className="text-start text-primary-text text-xl sm:text-3xl">
+                    Create Account
+                </h1>
+                <p className="font-light text-sm sm:text-lg text-secondary-text">
+                    Please enter your information to create your account.
+                </p>
 
                 <AuthForm
                     mode="register"
@@ -55,9 +72,12 @@ export default function Register() {
                     error={error}
                 />
 
-                <p className="text-center text-lg text-gray-600">
-                    Have an Account?{' '}
-                    <Link to="/login" className="text-primary hover:text-primary-hover font-medium">
+                <p className="text-center text-sm sm:text-lg text-gray-600">
+                    Already have an account?{' '}
+                    <Link
+                        to="/login"
+                        className="text-primary hover:text-primary-hover font-medium transition-colors"
+                    >
                         Sign in
                     </Link>
                 </p>

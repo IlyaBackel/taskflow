@@ -1,12 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { authSchema, type AuthFormData } from '../../schemas/auth.schema';
+import { loginSchema, registerSchema, type LoginFormData, type RegisterFormData } from '../../schemas/auth.schema';
 import Input from '../shared/Input';
-import GoogleOAuthButton from './GoogleOAuthButton';
+import GoogleSignInButton from './GoogleOAuthButton';
 
 interface AuthFormProps {
     mode: 'login' | 'register';
-    onSubmit: (data: AuthFormData) => void | Promise<void>;
+    onSubmit: (data: LoginFormData | RegisterFormData) => void | Promise<void>;
     isLoading?: boolean;
     error?: string | null;
 }
@@ -17,31 +17,41 @@ export default function AuthForm({
     isLoading = false,
     error,
 }: AuthFormProps) {
+    const schema = mode === 'login' ? loginSchema : registerSchema;
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<AuthFormData>({
-        resolver: zodResolver(authSchema),
+    } = useForm<LoginFormData | RegisterFormData>({
+        resolver: zodResolver(schema),
     });
 
     const buttonText = mode === 'login' ? 'Sign In' : 'Sign Up';
 
     return (
-        <div className='flex flex-col gap-10 mx-auto'>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 w-full max-w-md mx-auto items-center">
-
+        <div className="flex flex-col gap-6 w-full">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
                 {error && (
-                    <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
+                    <div className="p-3 text-sm   border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md">
                         {error}
                     </div>
+                )}
+
+                {mode === 'register' && (
+                    <Input
+                        label="Full Name"
+                        type="text"
+                        placeholder="Your full name"
+                        {...register('name')}
+                        error={(errors as any).name?.message}
+                    />
                 )}
 
                 <Input
                     label="Email"
                     type="email"
-                    placeholder="Enter your mail"
+                    placeholder="Enter your email"
                     {...register('email')}
                     error={errors.email?.message}
                 />
@@ -57,16 +67,15 @@ export default function AuthForm({
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-primary w-[40%] sm:w-[50%] py-2 text-white sm:py-4 rounded-2xl text-md sm:text-xl hover:bg-primary-hover shadow-[#4e4c7d] shadow-lg  transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 sm:py-3.5 px-4 text-base sm:text-lg font-medium rounded-2xl shadow-lg transition-colors duration-200 bg-primary hover:bg-primary-hover text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isLoading ? 'Loading...' : buttonText}
                 </button>
-
             </form>
 
-            <div className='flex flex-col items-center gap-4'>
-                <p className='text-center text-sm sm:text-lg text-primary-text'>Sign in with</p>
-                <GoogleOAuthButton />
+            <div className="flex flex-col items-center gap-3">
+                <p className="text-sm sm:text-base text-secondary-text">Sign in with</p>
+                <GoogleSignInButton />
             </div>
         </div>
     );
