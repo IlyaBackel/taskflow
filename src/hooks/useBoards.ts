@@ -33,7 +33,6 @@ export const useBoards = () => {
 
     const createBoardMutation = useMutation({
         mutationFn: (title: string) => {
-            if (!user) throw new Error('You must be logged in to create a board');
             return createBoard(title, user.id);
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['boards', user?.id] })

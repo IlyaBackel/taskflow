@@ -19,34 +19,29 @@ export default function Register() {
                 password: data.password,
                 options: {
                     emailRedirectTo: `${window.location.origin}/login`,
+                    data: {
+                        name: data.name,
+                    },
                 },
             });
 
-            if (signUpError) {
-                setError(signUpError.message);
-                return;
-            }
-
-            const user = authData.user;
-            if (!user) {
-                setError('Registration failed');
-                return;
-            }
+            if (signUpError) throw signUpError;
+            if (!authData.user) throw new Error('Registration failed');
 
             const { error: profileError } = await supabase
                 .from('profiles')
-                .upsert({ id: user.id, name: data.name }, { onConflict: 'id' });
+                .upsert({ id: authData.user.id, name: data.name }, { onConflict: 'id' });
 
-            if (profileError) {
-                setError(profileError.message);
-                return;
-            }
+            if (profileError) throw profileError;
 
-            user.confirmed_at ? navigate('/boards') : navigate('/confirm-email', { state: { email: data.email } });
+            console.log(authData.user.confirmed_at);
+
+            authData.user.confirmed_at
+                ? navigate('/boards')
+                : navigate('/confirm-email', { state: { email: data.email } });
 
         } catch (err) {
-            console.error('Unexpected error during registration:', err);
-            setError('An unexpected error occurred. Please try again.');
+            setError(err.message || 'An unexpected error occurred.');
         } finally {
             setIsLoading(false);
         }

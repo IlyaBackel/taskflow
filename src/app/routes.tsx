@@ -5,15 +5,23 @@ import Boards from "../pages/Boards";
 import ConfirmEmail from "../pages/ConfirmEmail";
 import MainLayout from "./layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import Profile from "../pages/Profile";
+import PublicRoute from "./PublicRoute";
 
 export const routes = createBrowserRouter([
     {
         path: "/login",
-        element: <Login />
+        element: (
+            <PublicRoute>
+                <Login />
+            </PublicRoute>)
     },
     {
         path: "/register",
-        element: <Register />
+        element: (
+            <PublicRoute>
+                <Register />
+            </PublicRoute>)
     },
     {
         path: '/confirm-email',
@@ -28,6 +36,7 @@ export const routes = createBrowserRouter([
         children: [
             { path: '/', element: <Navigate to="/boards" replace /> },
             { path: '/boards', element: <Boards /> },
+            { path: '/profile', element: <Profile /> },
         ],
     },
 ])

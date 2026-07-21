@@ -1,27 +1,11 @@
 import { Outlet } from "react-router-dom";
-import ThemeToggle from "../../components/shared/ThemeToggle";
-import { useAuth } from "../../providers/AuthProvider";
+import Header from "../../components/header/Header";
 
 export default function MainLayout() {
-    const { signOut } = useAuth();
 
     return (
         <div>
-            <header className="flex flex-row justify-end gap-5">
-
-                <ThemeToggle />
-
-                <div>
-                    profile
-                </div>
-                <button
-                    onClick={signOut}
-                    className="text-sm text-red-500 hover:text-red-700"
-                >
-                    Sign Out
-                </button>
-            </header>
-
+            <Header />
             <main>
                 <Outlet />
             </main>
