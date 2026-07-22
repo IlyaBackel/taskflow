@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
-import { useSession } from '../hooks/useSession';
+import { useAuth } from '../providers/AuthProvider';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-    const { user, loading } = useSession();
+    const { user, loading } = useAuth();
 
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;

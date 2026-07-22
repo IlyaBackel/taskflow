@@ -1,9 +1,7 @@
-import { useProfileQuery } from "../../hooks/useProfileQuery";
-import { useAuth } from "../../providers/AuthProvider";
+import { useUserData } from "../../hooks/useUserData";
 
 export default function ProfileAvatar({ onClick }) {
-    const { user } = useAuth();
-    const { profile } = useProfileQuery(user?.id);
+    const { profile, user } = useUserData()
 
     if (profile?.avatar_url) {
         return (
@@ -15,9 +13,7 @@ export default function ProfileAvatar({ onClick }) {
         );
     }
 
-    console.log(user);
-
-    const initials = profile?.name?.charAt(0) || user?.email?.charAt(0) || '?';
+    const initials = user.email.charAt(0) || profile?.name?.charAt(0) || '?';
 
     return (
         <div className="flex items-center justify-center border-2 w-15 h-15 rounded-[50%] bg-primary-hover text-2xl" onClick={onClick}>

@@ -1,12 +1,12 @@
-import { useSession } from "../hooks/useSession";
+import { useUserData } from "../hooks/useUserData";
 
 export default function Profile() {
-
-    const { user } = useSession();
-
-
+    const { profile, user } = useUserData()
 
     return (
-        <div>Profile</div>
+        <div>
+            <p>{profile?.name}</p>
+            <p>{user?.email}</p>
+        </div>
     )
 }

@@ -9,12 +9,11 @@ export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="flex flex-row justify-between items-center gap-5 p-4">
+        <header className="flex flex-row justify-between items-center gap-5 px-10 py-5 border-b-2 border-olive-900">
 
             <Link to="/" className="text-3xl font-semibold text-primary-text">Task Flow</Link>
 
             <div className="flex flex-row items-center gap-7">
-
                 <ThemeToggle />
 
                 <div className="relative">
@@ -27,7 +26,8 @@ export default function Header() {
                             <button
                                 onClick={signOut}
                                 className="text-xl text-primary-text hover:text-red-700"
-                            >Sign Out
+                            >
+                                Sign Out
                             </button>
                         </div>
                     )}
