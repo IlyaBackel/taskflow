@@ -17,7 +17,7 @@ export const updateProfile = async (userId: string, updates: { name?: string; av
         .update(updates)
         .eq('id', userId)
         .select()
-        .single();
+        .maybeSingle();
 
     if (error) throw new Error(error.message);
     return data;
