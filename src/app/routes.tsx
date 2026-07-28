@@ -7,6 +7,7 @@ import MainLayout from "./layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Profile from "../pages/Profile";
 import PublicRoute from "./PublicRoute";
+import Board from "../pages/Board";
 
 export const routes = createBrowserRouter([
     {
@@ -37,6 +38,7 @@ export const routes = createBrowserRouter([
             { path: '/', element: <Navigate to="/boards" replace /> },
             { path: '/boards', element: <Boards /> },
             { path: '/profile', element: <Profile /> },
+            { path: '/board/:id', element: <Board /> },
         ],
     },
 ])

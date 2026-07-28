@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchBoards, createBoard } from '../services/boardService';
+import { fetchBoards, createBoard, deleteBoard } from '../services/boardService';
 import { supabase } from '../services/supabaseClient';
 import { useEffect, useState } from 'react';
 import type { Board } from '../types/board';
@@ -39,11 +39,23 @@ export const useBoards = () => {
 
     });
 
+    const deleteBoardMutation = useMutation({
+        mutationFn: (boardId: string) => {
+            if (!user) throw new Error('User not authenticated');
+            return deleteBoard(boardId);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['boards', user?.id] });
+        },
+    });
+
     return {
         boards,
         isLoading: isLoading || loadingUser,
         error,
         createBoard: createBoardMutation.mutateAsync,
+        deleteBoard: deleteBoardMutation.mutateAsync,
         isCreating: createBoardMutation.isPending,
+        isDeleting: deleteBoardMutation.isPending,
     };
 };

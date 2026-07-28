@@ -16,11 +16,11 @@ export const fetchBoards = async (userId: string): Promise<Board[]> => {
     }
 };
 
-export const createBoard = async (title: string, ownerId: string): Promise<Board> => {
+export const createBoard = async (title: string, ownerId: string, coverImage?: string): Promise<Board> => {
     try {
         const { data: board, error: boardError } = await supabase
             .from('boards')
-            .insert({ title, owner_id: ownerId })
+            .insert({ title, owner_id: ownerId, cover_image: coverImage || null })
             .select()
             .single();
 
@@ -35,9 +35,35 @@ export const createBoard = async (title: string, ownerId: string): Promise<Board
             throw new Error(memberError.message);
         }
 
+        const defaultColumns = [
+            { title: 'To Do', position: 0 },
+            { title: 'In Progress', position: 1 },
+            { title: 'Done', position: 2 },
+        ];
+        const { error: columnsError } = await supabase
+            .from('columns')
+            .insert(defaultColumns.map(col => ({ ...col, board_id: board.id })));
+
+        if (columnsError) {
+            await supabase.from('boards').delete().eq('id', board.id);
+            throw new Error(columnsError.message);
+        }
+
         return board;
     } catch (error) {
         console.error('Error creating board:', error);
         throw new Error(error instanceof Error ? error.message : 'Failed to create board');
+    }
+};
+
+export const deleteBoard = async (boardId: string): Promise<void> => {
+    const { error } = await supabase
+        .from('boards')
+        .delete()
+        .eq('id', boardId);
+
+    if (error) {
+        console.error('Error deleting board:', error);
+        throw new Error(error.message);
     }
 };
