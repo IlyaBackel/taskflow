@@ -36,10 +36,11 @@ export const createBoard = async (title: string, ownerId: string, coverImage?: s
         }
 
         const defaultColumns = [
-            { title: 'To Do', position: 0 },
-            { title: 'In Progress', position: 1 },
-            { title: 'Done', position: 2 },
+            { title: 'To Do', position: 0, color: "#3b83f66e" },
+            { title: 'In Progress', position: 1, color: "#f59f0b70" },
+            { title: 'Done', position: 2, color: "#10b9816c" },
         ];
+
         const { error: columnsError } = await supabase
             .from('columns')
             .insert(defaultColumns.map(col => ({ ...col, board_id: board.id })));

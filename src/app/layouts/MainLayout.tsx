@@ -16,7 +16,7 @@ export default function MainLayout() {
     return (
         <div>
             <Header />
-            <main className="sm:px-20 sm:items-start py-10 px-20 flex items-center sm:justify-start justify-center">
+            <main className="px-7 sm:px-10 md:px-13 sm:items-start py-10 flex items-center sm:justify-start justify-center">
                 <Outlet />
             </main>
         </div>

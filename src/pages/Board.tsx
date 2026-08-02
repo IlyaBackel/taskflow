@@ -2,34 +2,42 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useBoard } from '../hooks/useBoard';
 import { useColumns } from '../hooks/useColumns';
-import Input from '../components/shared/Input';
 import Column from '../components/board/Column';
+import BoardHeader from '../components/board/BoardHeader';
+import CreateColumnModal from '../components/board/CreateColumnModal';
 
 export default function Board() {
     const { id } = useParams<{ id: string }>();
     const { board, columns, tasks, isLoading, error } = useBoard(id!);
     const { createColumn, updateColumn, deleteColumn, isCreating } = useColumns(id!);
-    const [newColumnTitle, setNewColumnTitle] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     if (isLoading) return <div>Loading board...</div>;
     if (error) return <div className="text-red-500">Error: {error.message}</div>;
     if (!board) return <div>Board not found</div>;
 
-    const handleAddColumn = async () => {
-        if (!newColumnTitle.trim()) return;
-        await createColumn({ title: newColumnTitle.trim(), position: columns.length });
-        setNewColumnTitle('');
+    const handleAddColumn = async (title: string, color: string) => {
+        await createColumn({
+            title,
+            position: columns.length,
+            color,
+        });
     };
 
-    const handleAddTask = async () => {
+    const handleAddTask = async (columnId: string, title: string) => {
+        console.log('Add task:', columnId, title);
     };
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">{board.title}</h1>
-            {board.cover_image && (
-                <img src={board.cover_image} alt={board.title} className="w-full h-48 object-cover rounded-lg mb-4" />
-            )}
+        <div className="p-4 w-full">
+            <BoardHeader board={board} />
+
+            <button
+                onClick={() => setIsModalOpen(true)}
+                className="my-5 lg:w-20 lg:h-20 w-10 h-10 sm:w-13 sm:h-13 md:w-16 md:h-16 flex items-center cursor-pointer p-5 justify-center sm:text-xl md:text-2xl lg:text-4xl text-secondary-text bg-card-bg rounded-full shadow border border-border-primary transition-colors"
+            >
+                +
+            </button>
 
             <div className="flex gap-4 overflow-x-auto pb-4">
                 {columns.map((column) => (
@@ -37,31 +45,21 @@ export default function Board() {
                         key={column.id}
                         column={column}
                         tasks={tasks.filter((task) => task.column_id === column.id)}
-                        onRename={(id, title) => updateColumn({ columnId: id, updates: { title } })}
+                        onRename={(id, title) =>
+                            updateColumn({ columnId: id, updates: { title } })
+                        }
                         onDelete={deleteColumn}
                         onAddTask={handleAddTask}
                     />
                 ))}
-
-                <div className="min-w-62.5 p-3 bg-card-bg rounded shadow border border-dashed border-border-primary">
-                    <form onSubmit={(e) => { e.preventDefault(); handleAddColumn(); }} className="flex flex-col gap-2">
-                        <Input
-                            value={newColumnTitle}
-                            onChange={(e) => setNewColumnTitle(e.target.value)}
-                            placeholder="New column..."
-                            disabled={isCreating}
-                            className="text-sm"
-                        />
-                        <button
-                            type="submit"
-                            disabled={isCreating || !newColumnTitle.trim()}
-                            className="text-sm bg-primary text-white py-1 px-2 rounded hover:bg-primary-hover disabled:opacity-50"
-                        >
-                            Add Column
-                        </button>
-                    </form>
-                </div>
             </div>
+
+            <CreateColumnModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onCreate={handleAddColumn}
+                isCreating={isCreating}
+            />
         </div>
     );
 }

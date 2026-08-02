@@ -5,15 +5,15 @@ export const useColumns = (boardId: string) => {
     const queryClient = useQueryClient();
 
     const createMutation = useMutation({
-        mutationFn: ({ title, position }: { title: string; position: number }) =>
-            createColumn(boardId, title, position),
+        mutationFn: ({ title, position, color }: { title: string; position: number; color?: string }) =>
+            createColumn(boardId, title, position, color),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['columns', boardId] });
         },
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ columnId, updates }: { columnId: string; updates: { title?: string; position?: number } }) =>
+        mutationFn: ({ columnId, updates }: { columnId: string; updates: { title?: string; position?: number; color?: string } }) =>
             updateColumn(columnId, updates),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['columns', boardId] });

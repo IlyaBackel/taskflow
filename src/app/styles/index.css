@@ -11,7 +11,8 @@
   --color-placeholder: #9ca3af;
   --color-border-primary: #262c38;
   --color-btn-hover: #bcc6dd;
-  --color-card-bg: #2c2c34;
+  --color-card-bg: #e1dfdf;
+  --color-card-hover-bg: #d6d6d6;
 
   --toggle-track-bg: #e5e7eb;
   --toggle-thumb-bg: #ffffff;
@@ -35,7 +36,8 @@
   --color-primary-hover: #5e5be6;
   --color-border-primary: #778db0;
   --color-btn-hover: #5f646f;
-  --color-card-bg: #2c2c34;
+  --color-card-bg: #383843;
+  --color-card-hover-bg: #474755;
 
   --toggle-track-bg: #374151;
   --toggle-thumb-bg: #1f2937;
@@ -46,8 +48,8 @@
   --google-btn-text: #f9fafb;
   --google-btn-border: #767575;
   --google-btn-hover-bg: #374151;
+  --google-btn-hover-bg: #7e7ae9;
 }
-
 body {
   font-family: var(--font-family-sans);
   background-color: var(--color-primary-bg);

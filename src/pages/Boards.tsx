@@ -29,15 +29,17 @@ export default function Boards() {
 
 
     return (
-        <div className="sm:p-4">
-            <h1 className="text-2xl font-bold mb-4">My Boards</h1>
+        <div className="sm:p-4 w-full">
+            <div className='flex justify-between'>
+                <h1 className="text-2xl font-bold mb-4 text-primary-text">Your Boards</h1>
 
-            <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-primary text-white px-4 py-2 rounded-lg"
-            >
-                + New Board
-            </button>
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="bg-primary text-white px-4 py-2 rounded-lg"
+                >
+                    + New Board
+                </button>
+            </div>
 
             <CreateBoardModal
                 isOpen={isModalOpen}
@@ -46,7 +48,7 @@ export default function Boards() {
 
             {boards?.length === 0 && <p>No boards yet. Create one!</p>}
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-5">
                 {boards?.map((board) => (
                     <BoardItem
                         key={board.id}

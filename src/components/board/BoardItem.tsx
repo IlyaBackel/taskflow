@@ -9,21 +9,21 @@ interface BoardItemProps {
 export default function BoardItem({ board, onNavigate, onDelete }: BoardItemProps) {
     return (
         <div
-            className="group h-fit relative rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-200 cursor-pointer bg-white"
+            className="group h-fit relative rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow duration-200 cursor-pointer bg-card-bg hover:bg-card-hover-bg"
             onClick={() => onNavigate(board.id)}
         >
-            <div className="w-full">
+            <div className="relative h-48 sm:h-56 md:h-70 lg:h-70 bg-gray-200 dark:bg-gray-700">
                 {board.cover_image ? (
                     <img
                         src={board.cover_image}
                         alt={board.title}
-                        className="lg:w-200 lg:h-90 h-auto object-cover rounded-t-xl"
+                        className="w-full h-full object-cover"
                     />
                 ) : (
                     <img
                         src="/not-found-image.svg"
                         alt="not found"
-                        className="lg:w-200 lg:h-90 h-auto object-cover"
+                        className="w-full h-full object-center"
                     />
                 )}
             </div>
@@ -40,8 +40,8 @@ export default function BoardItem({ board, onNavigate, onDelete }: BoardItemProp
                 </button>
             </div>
 
-            <div className="p-3">
-                <h3 className="font-medium text-gray-800 truncate">{board.title}</h3>
+            <div className="p-4 pl-7">
+                <h3 className="font-medium text-xl text-primary-text truncate">{board.title}</h3>
             </div>
         </div>
     );

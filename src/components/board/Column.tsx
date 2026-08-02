@@ -25,7 +25,8 @@ export default function Column({ column, tasks, onRename, onDelete }: ColumnProp
     };
 
     return (
-        <div className="min-w-62.5 bg-card-bg p-3 rounded shadow">
+        <div className="min-w-30 min-h-70 bg-card-bg p-3 rounded shadow"
+            style={{ backgroundColor: `${column.color}` }}>
             <div className="flex items-center justify-between mb-2">
                 {isEditing ? (
                     <form
@@ -42,7 +43,7 @@ export default function Column({ column, tasks, onRename, onDelete }: ColumnProp
                     </form>
                 ) : (
                     <h3
-                        className="font-semibold cursor-pointer hover:text-primary"
+                        className="font-semibold cursor-pointer text-primary-text hover:text-primary"
                         onDoubleClick={() => setIsEditing(true)}
                     >
                         {column.title}
