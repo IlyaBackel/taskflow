@@ -1,4 +1,3 @@
-// src/components/board/BoardMembersModal.tsx
 import { useState } from 'react';
 import { useBoardMembers } from '../../hooks/useBoardMembers';
 import { useUserData } from '../../hooks/useUserData';
@@ -17,6 +16,10 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
+    const isCurrentUserOwner = members?.some(
+        (m) => m.profiles[0]?.id === user?.id && m.role === 'owner'
+    );
+
     const handleSearch = async (query: string) => {
         setSearchQuery(query);
         if (!query.trim()) {
@@ -26,9 +29,8 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
         setIsSearching(true);
         try {
             const results = await searchUsers(query);
-            // Исключаем уже добавленных участников
-            const memberIds = members?.map(m => m.profiles[0]?.id) || [];
-            const filtered = results.filter(u => !memberIds.includes(u.id));
+            const memberIds = members?.map((m) => m.profiles[0]?.id) || [];
+            const filtered = results.filter((u) => !memberIds.includes(u.id));
             setSearchResults(filtered);
         } catch (e) {
             console.error(e);
@@ -43,7 +45,11 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
         setSearchResults([]);
     };
 
-    const handleRemove = async (memberId: string, memberUserId: string) => {
+    const handleRemove = async (memberId: string, memberUserId: string, memberRole: string) => {
+        if (memberRole === 'owner') {
+            alert('Cannot remove the board owner.');
+            return;
+        }
         if (memberUserId === user?.id) {
             alert('You cannot remove yourself.');
             return;
@@ -58,53 +64,90 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
     return (
         <Modal onClose={onClose}>
             <div className="bg-[var(--color-card-bg)] p-6 rounded-lg shadow-xl w-full max-w-md">
-                <h2 className="text-xl font-bold mb-4 text-[var(--color-text-primary)]">Board Members</h2>
+                <h2 className="text-xl font-bold mb-4 text-[var(--color-text-primary)]">
+                    Board Members
+                </h2>
 
-                {/* Поиск */}
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search users by email..."
-                        value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 bg-[var(--color-card-bg)] text-[var(--color-text-primary)]"
-                    />
-                    {isSearching && <span className="text-sm text-[var(--color-text-secondary)]">Searching...</span>}
-                    {searchResults.length > 0 && (
-                        <ul className="mt-2 border border-[var(--color-border)] rounded-lg divide-y divide-[var(--color-border)]">
-                            {searchResults.map((u) => (
-                                <li key={u.id} className="flex justify-between items-center p-2 hover:bg-[var(--color-border)]">
-                                    <span>{u.name || u.email}</span>
-                                    <button
-                                        onClick={() => handleAdd(u.id)}
-                                        disabled={isAdding}
-                                        className="text-sm bg-[var(--color-primary)] text-white px-2 py-1 rounded hover:bg-[var(--color-primary-hover)] disabled:opacity-50"
+                {isCurrentUserOwner && (
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search users by name or email..."
+                            value={searchQuery}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 bg-[var(--color-card-bg)] text-[var(--color-text-primary)]"
+                        />
+                        {isSearching && (
+                            <span className="text-sm text-[var(--color-text-secondary)]">Searching...</span>
+                        )}
+                        {searchResults.length > 0 && (
+                            <ul className="mt-2 border border-[var(--color-border)] rounded-lg divide-y divide-[var(--color-border)]">
+                                {searchResults.map((u) => (
+                                    <li
+                                        key={u.id}
+                                        className="flex justify-between items-center p-2 hover:bg-[var(--color-border)]"
                                     >
-                                        Add
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
+                                        <span>{u.name || u.email}</span>
+                                        <button
+                                            onClick={() => handleAdd(u.id)}
+                                            disabled={isAdding}
+                                            className="text-sm bg-[var(--color-primary)] text-white px-2 py-1 rounded hover:bg-[var(--color-primary-hover)] disabled:opacity-50"
+                                        >
+                                            Add
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                )}
 
-                {/* Список участников */}
                 <div>
-                    <h3 className="font-medium mb-2 text-[var(--color-text-primary)]">Current Members</h3>
-                    {members?.length === 0 && <p className="text-sm text-[var(--color-text-secondary)]">No members yet.</p>}
+                    <h3 className="font-medium mb-2 text-[var(--color-text-primary)]">
+                        Current Members
+                    </h3>
+                    {members?.length === 0 && (
+                        <p className="text-sm text-[var(--color-text-secondary)]">No members yet.</p>
+                    )}
                     <ul className="space-y-1">
                         {members?.map((member) => {
                             const profile = member.profiles?.[0];
                             if (!profile) return null;
+
+                            const canRemove =
+                                isCurrentUserOwner &&
+                                member.role !== 'owner' &&
+                                profile.id !== user?.id;
+
                             return (
-                                <li key={member.id} className="flex justify-between items-center p-2 border-b border-[var(--color-border)]">
-                                    <div>
-                                        <span className="font-medium">{profile.name || profile.email}</span>
-                                        <span className="text-xs text-[var(--color-text-secondary)] ml-2">{member.role}</span>
+                                <li
+                                    key={member.id}
+                                    className="flex justify-between items-center p-2 border-b border-[var(--color-border)]"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        {profile.avatar_url ? (
+                                            <img
+                                                src={profile.avatar_url}
+                                                alt=""
+                                                className="w-7 h-7 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-7 h-7 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-xs font-bold">
+                                                {(profile.name || profile.email).charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
+                                        <div>
+                                            <span className="font-medium text-[var(--color-text-primary)]">
+                                                {profile.name || profile.email}
+                                            </span>
+                                            <span className="text-xs text-[var(--color-text-secondary)] ml-2">
+                                                {member.role}
+                                            </span>
+                                        </div>
                                     </div>
-                                    {profile.id !== user?.id && (
+                                    {canRemove && (
                                         <button
-                                            onClick={() => handleRemove(member.id, profile.id)}
+                                            onClick={() => handleRemove(member.id, profile.id, member.role)}
                                             disabled={isRemoving}
                                             className="text-sm text-red-500 hover:text-red-700 disabled:opacity-50"
                                         >

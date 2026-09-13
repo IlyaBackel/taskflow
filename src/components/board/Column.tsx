@@ -4,15 +4,22 @@ import Input from '../shared/Input';
 interface ColumnProps {
     column: any;
     tasks: any[];
-    onRename: (columnId: string, newTitle: string) => void;
-    onDelete: (columnId: string) => void;
-    onAddTask: (columnId: string, title: string) => void;
+    onRename: (id: string, title: string) => void;
+    onDelete: (id: string) => void;
+    onAddTask: () => void;
+    onTaskClick: (task: any) => void;
 }
 
-export default function Column({ column, tasks, onRename, onDelete }: ColumnProps) {
+export default function Column({
+    column,
+    tasks,
+    onRename,
+    onDelete,
+    onAddTask,
+    onTaskClick,
+}: ColumnProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editingTitle, setEditingTitle] = useState(column.title);
-    const [newTaskTitle, setNewTaskTitle] = useState('');
 
     const handleRename = () => {
         if (editingTitle.trim()) {
@@ -21,16 +28,31 @@ export default function Column({ column, tasks, onRename, onDelete }: ColumnProp
         }
     };
 
-    const handleAddTask = () => {
+    const priorityColor = (priority: string) => {
+        switch (priority) {
+            case 'high':
+                return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
+            case 'medium':
+                return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300';
+            case 'low':
+                return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300';
+            default:
+                return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+        }
     };
 
     return (
-        <div className="min-w-30 min-h-70 bg-card-bg p-3 rounded shadow"
-            style={{ backgroundColor: `${column.color}` }}>
+        <div
+            className="min-w-[250px] bg-[var(--color-card-bg)] p-3 rounded shadow border-l-4"
+            style={{ borderLeftColor: column.color || '#e2e8f0' }}
+        >
             <div className="flex items-center justify-between mb-2">
                 {isEditing ? (
                     <form
-                        onSubmit={(e) => { e.preventDefault(); handleRename(); }}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleRename();
+                        }}
                         className="flex-1"
                     >
                         <Input
@@ -43,8 +65,9 @@ export default function Column({ column, tasks, onRename, onDelete }: ColumnProp
                     </form>
                 ) : (
                     <h3
-                        className="font-semibold cursor-pointer text-primary-text hover:text-primary"
+                        className="font-semibold cursor-pointer hover:text-[var(--color-primary)]"
                         onDoubleClick={() => setIsEditing(true)}
+                        style={{ color: column.color || 'var(--color-text-primary)' }}
                     >
                         {column.title}
                     </h3>
@@ -59,32 +82,38 @@ export default function Column({ column, tasks, onRename, onDelete }: ColumnProp
 
             <div className="space-y-2">
                 {tasks.map((task) => (
-                    <div key={task.id} className="p-2 bg-primary-bg rounded shadow-sm flex justify-between items-center">
-                        <span>{task.title}</span>
-                        <button
-                            className="text-xs text-red-400 hover:text-red-600"
-                        >
-                            ✕
-                        </button>
+                    <div
+                        key={task.id}
+                        onClick={() => onTaskClick(task)}
+                        className="p-2 bg-[var(--color-primary-bg)] rounded shadow-sm cursor-pointer hover:bg-[var(--color-border)] transition-colors"
+                    >
+                        <div className="flex items-start justify-between gap-2">
+                            <span className="font-medium text-[var(--color-text-primary)]">
+                                {task.title}
+                            </span>
+                            {task.priority && (
+                                <span
+                                    className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${priorityColor(task.priority)}`}
+                                >
+                                    {task.priority}
+                                </span>
+                            )}
+                        </div>
+                        {task.due_date && (
+                            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                                📅 {new Date(task.due_date).toLocaleDateString()}
+                            </p>
+                        )}
                     </div>
                 ))}
             </div>
 
-            <div className="mt-2 flex gap-1">
-                <Input
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    placeholder="Add task..."
-                    className="text-sm flex-1"
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
-                />
-                <button
-                    onClick={handleAddTask}
-                    className="text-sm bg-primary text-white px-2 py-1 rounded hover:bg-primary-hover"
-                >
-                    +
-                </button>
-            </div>
+            <button
+                onClick={onAddTask}
+                className="mt-2 w-full text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-border)] py-2 rounded transition-colors flex items-center justify-center gap-1"
+            >
+                + Add task
+            </button>
         </div>
     );
 }

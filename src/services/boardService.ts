@@ -2,18 +2,24 @@ import type { Board } from "../types/board";
 import { supabase } from "./supabaseClient";
 
 export const fetchBoards = async (userId: string): Promise<Board[]> => {
-    try {
-        const { data, error } = await supabase
-            .from('boards')
-            .select('*')
-            .eq('owner_id', userId);
+    const { data: memberships, error: membershipsError } = await supabase
+        .from('board_members')
+        .select('board_id')
+        .eq('user_id', userId);
 
-        if (error) throw new Error(error.message);
-        return data || [];
-    } catch (error) {
-        console.error('Error fetching boards:', error);
-        throw error;
-    }
+    if (membershipsError) throw membershipsError;
+    if (!memberships || memberships.length === 0) return [];
+
+    const boardIds = memberships.map(m => m.board_id);
+
+    const { data: boards, error: boardsError } = await supabase
+        .from('boards')
+        .select('*')
+        .in('id', boardIds)
+        .order('created_at', { ascending: false });
+
+    if (boardsError) throw boardsError;
+    return boards || [];
 };
 
 export const createBoard = async (title: string, ownerId: string, coverImage?: string): Promise<Board> => {

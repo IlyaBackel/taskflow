@@ -2,10 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchBoards, createBoard, deleteBoard } from '../services/boardService';
 import { supabase } from '../services/supabaseClient';
 import { useEffect, useState } from 'react';
+import type { User } from '@supabase/supabase-js';
 import type { Board } from '../types/board';
 
 export const useBoards = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const [loadingUser, setLoadingUser] = useState(true);
     const queryClient = useQueryClient();
 
@@ -32,11 +33,13 @@ export const useBoards = () => {
     });
 
     const createBoardMutation = useMutation({
-        mutationFn: (title: string) => {
-            return createBoard(title, user.id);
+        mutationFn: ({ title, coverImage }: { title: string; coverImage?: string }) => {
+            if (!user) throw new Error('User not authenticated');
+            return createBoard(title, user.id, coverImage);
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['boards', user?.id] })
-
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['boards', user?.id] });
+        },
     });
 
     const deleteBoardMutation = useMutation({
@@ -53,6 +56,7 @@ export const useBoards = () => {
         boards,
         isLoading: isLoading || loadingUser,
         error,
+        user,
         createBoard: createBoardMutation.mutateAsync,
         deleteBoard: deleteBoardMutation.mutateAsync,
         isCreating: createBoardMutation.isPending,
