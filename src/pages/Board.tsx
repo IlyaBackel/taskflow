@@ -5,12 +5,14 @@ import { useColumns } from '../hooks/useColumns';
 import Column from '../components/board/Column';
 import BoardHeader from '../components/board/BoardHeader';
 import CreateColumnModal from '../components/board/CreateColumnModal';
+import BoardMembersModal from '../components/board/BoardMembersModal';
 
 export default function Board() {
     const { id } = useParams<{ id: string }>();
     const { board, columns, tasks, isLoading, error } = useBoard(id!);
     const { createColumn, updateColumn, deleteColumn, isCreating } = useColumns(id!);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
 
     if (isLoading) return <div>Loading board...</div>;
     if (error) return <div className="text-red-500">Error: {error.message}</div>;
@@ -30,11 +32,21 @@ export default function Board() {
 
     return (
         <div className="p-4 w-full">
-            <BoardHeader board={board} />
+            <div className="relative mb-4">
+                <BoardHeader board={board} />
+                <div className="absolute top-4 right-4 flex gap-2">
+                    <button
+                        onClick={() => setIsMembersModalOpen(true)}
+                        className="px-3 py-1.5 text-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg shadow hover:bg-white dark:hover:bg-gray-700 transition-colors"
+                    >
+                        👥 Members
+                    </button>
+                </div>
+            </div>
 
             <button
                 onClick={() => setIsModalOpen(true)}
-                className="my-5 lg:w-20 lg:h-20 w-10 h-10 sm:w-13 sm:h-13 md:w-16 md:h-16 flex items-center cursor-pointer p-5 justify-center sm:text-xl md:text-2xl lg:text-4xl text-secondary-text bg-card-bg rounded-full shadow border border-border-primary transition-colors"
+                className="my-5 lg:w-20 lg:h-20 w-10 h-10 sm:w-13 sm:h-13 md:w-16 md:h-16 flex items-center cursor-pointer p-5 justify-center sm:text-xl md:text-2xl lg:text-4xl text-secondary-text bg-card-bg rounded-full shadow border border-border-primary transition-colors hover:bg-[var(--color-border)]"
             >
                 +
             </button>
@@ -59,6 +71,12 @@ export default function Board() {
                 onClose={() => setIsModalOpen(false)}
                 onCreate={handleAddColumn}
                 isCreating={isCreating}
+            />
+
+            <BoardMembersModal
+                isOpen={isMembersModalOpen}
+                onClose={() => setIsMembersModalOpen(false)}
+                boardId={board.id}
             />
         </div>
     );
