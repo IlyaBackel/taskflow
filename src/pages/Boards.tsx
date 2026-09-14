@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBoards } from '../hooks/useBoards';
-import CreateBoardModal from '../components/board/CreateBoardModal';
-import BoardItem from '../components/board/BoardItem';
+import CreateBoardModal from '../components/boards/CreateBoardModal';
+import BoardItem from '../components/boards/BoardItem';
 
 export default function Boards() {
     const [isModalOpen, setIsModalOpen] = useState(false);

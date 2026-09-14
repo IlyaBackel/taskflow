@@ -8,6 +8,7 @@ const boardSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     cover_image: z.string().optional(),
 });
+
 type BoardFormData = z.infer<typeof boardSchema>;
 
 interface CreateBoardFormProps {

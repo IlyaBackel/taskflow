@@ -11,7 +11,7 @@ interface BoardItemProps {
 export default function BoardItem({ board, onNavigate, onDelete, isOwner, isDeleting }: BoardItemProps) {
     return (
         <div
-            className="group relative flex flex-col overflow-hidden rounded-xl bg-[var(--color-card-bg)] shadow hover:shadow-lg transition-shadow cursor-pointer"
+            className="group relative flex flex-col overflow-hidden rounded-xl bg-card-bg shadow hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => onNavigate(board.id)}
         >
             <div className="relative w-full h-48 bg-gray-200 dark:bg-gray-700">
@@ -49,7 +49,7 @@ export default function BoardItem({ board, onNavigate, onDelete, isOwner, isDele
             )}
 
             <div className="p-4">
-                <h3 className="font-medium text-xl text-[var(--color-text-primary)] truncate">
+                <h3 className="font-medium text-xl text-primary-text truncate">
                     {board.title}
                 </h3>
             </div>
