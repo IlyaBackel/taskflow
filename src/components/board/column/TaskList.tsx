@@ -1,24 +1,21 @@
-import TaskCard from '../../task/TaskCard';
+// src/components/board/column/TaskList.tsx
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { Task } from '../../../types/task';
+import TaskCard from '../../task/TaskCard';
 
 interface TaskListProps {
     tasks: Task[];
-    columnId: string;
     onTaskClick: (task: Task) => void;
 }
 
-export default function TaskList({ tasks, columnId, onTaskClick }: TaskListProps) {
+export default function TaskList({ tasks, onTaskClick }: TaskListProps) {
     return (
-        <div className="space-y-2 min-h-12.5">
-            {tasks.map((task, index) => (
-                <TaskCard
-                    key={task.id}
-                    task={task}
-                    index={index}
-                    columnId={columnId}
-                    onClick={onTaskClick}
-                />
-            ))}
-        </div>
+        <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2 min-h-12.5">
+                {tasks.map((task) => (
+                    <TaskCard key={task.id} task={task} onClick={onTaskClick} />
+                ))}
+            </div>
+        </SortableContext>
     );
 }

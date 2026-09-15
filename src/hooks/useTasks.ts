@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createTask, updateTask, deleteTask } from '../services/taskService';
+import { createTask, updateTask, deleteTask, updateTasksBulk } from '../services/taskService';
 import { useUserData } from './useUserData';
 import type { Priority, Task } from '../types/task';
 
@@ -42,10 +42,20 @@ export const useTasks = (boardId: string) => {
         },
     });
 
+    // Обёртка над bulk-обновлением с инвалидацией кеша
+    const bulkUpdateMutation = useMutation({
+        mutationFn: (updates: Array<{ id: string; column_id: string; position: number }>) =>
+            updateTasksBulk(updates),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['tasks', boardId] });
+        },
+    });
+
     return {
         createTask: createMutation.mutateAsync,
         updateTask: updateMutation.mutateAsync,
         deleteTask: deleteMutation.mutateAsync,
+        updateTasksBulk: bulkUpdateMutation.mutateAsync,
         isCreating: createMutation.isPending,
         isUpdating: updateMutation.isPending,
         isDeleting: deleteMutation.isPending,

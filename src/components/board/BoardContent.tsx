@@ -1,6 +1,16 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { DragDropProvider } from '@dnd-kit/react';
+import { useState } from 'react';
+import {
+    DndContext,
+    DragOverlay,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    closestCorners,
+    type DragStartEvent,
+    type DragEndEvent,
+} from '@dnd-kit/core';
 import Column from './column/Column';
+import TaskCard from '../task/TaskCard';
 import type { Column as ColumnType } from '../../types/column';
 import type { Task } from '../../types/task';
 
@@ -8,7 +18,9 @@ interface BoardContentProps {
     boardId: string;
     columns: ColumnType[];
     tasks: Task[];
-    updateTask: (args: { taskId: string; updates: Partial<Task> }) => Promise<unknown>;
+    updateTasksBulk: (
+        updates: Array<{ id: string; column_id: string; position: number }>
+    ) => Promise<void>;
     onAddColumnClick: () => void;
     onRenameColumn: (columnId: string, title: string) => void;
     onDeleteColumn: (columnId: string) => void;
@@ -16,103 +28,96 @@ interface BoardContentProps {
     onTaskClick: (task: Task) => void;
 }
 
+const byPosition = (a: Task, b: Task) => a.position - b.position;
+
 export default function BoardContent({
-    boardId,
     columns,
     tasks,
-    updateTask,
+    updateTasksBulk,
     onAddColumnClick,
     onRenameColumn,
     onDeleteColumn,
     onAddTask,
     onTaskClick,
 }: BoardContentProps) {
-    const queryClient = useQueryClient();
+    const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-    const handleDragEnd = async (event: any) => {
-        if (event.canceled) return;
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    );
 
-        const { source, target } = event.operation;
-        if (!source || !target) return;
+    const handleDragStart = (event: DragStartEvent) => {
+        setActiveTask(tasks.find((t) => t.id === event.active.id) ?? null);
+    };
 
-        const taskId = source.id as string;
-        const targetId = target.id as string;
+    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+        setActiveTask(null);
+        if (!over) return;
 
-        const activeTask = tasks.find((t) => t.id === taskId);
+        const activeId = String(active.id);
+        const overId = String(over.id);
+
+        const activeTask = tasks.find((t) => t.id === activeId);
         if (!activeTask) return;
 
-        const isTargetColumn = target.type === 'column';
-        const targetTask = tasks.find((t) => t.id === targetId);
-        const targetColumnId = isTargetColumn
-            ? (targetId as string)
-            : targetTask?.column_id;
-
+        const targetColumnId = columns.some((c) => c.id === overId)
+            ? overId
+            : tasks.find((t) => t.id === overId)?.column_id;
         if (!targetColumnId) return;
 
         const targetTasks = tasks
-            .filter((t) => t.column_id === targetColumnId && t.id !== taskId)
-            .sort((a, b) => a.position - b.position);
+            .filter((t) => t.column_id === targetColumnId && t.id !== activeId)
+            .sort(byPosition);
 
-        const newPosition = isTargetColumn
-            ? targetTasks.length
-            : Math.max(0, targetTasks.findIndex((t) => t.id === targetId));
+        const overIndex = targetTasks.findIndex((t) => t.id === overId);
+        const newIndex = overIndex >= 0 ? overIndex : targetTasks.length;
 
-        const previousTasks = queryClient.getQueryData<Task[]>(['tasks', boardId]);
+        const newOrder = [
+            ...targetTasks.slice(0, newIndex),
+            activeTask,
+            ...targetTasks.slice(newIndex),
+        ];
 
-        queryClient.setQueryData<Task[]>(['tasks', boardId], (old = []) => {
-            const updated = old.map((t) =>
-                t.id === taskId
-                    ? { ...t, column_id: targetColumnId, position: newPosition }
-                    : t
-            );
+        const updates = newOrder.map((task, i) => ({
+            id: task.id,
+            column_id: targetColumnId,
+            position: i,
+        }));
 
-            const columnTasks = updated
-                .filter((t) => t.column_id === targetColumnId)
-                .sort((a, b) => {
-                    if (a.id === taskId) return newPosition - (b.position ?? 0);
-                    if (b.id === taskId) return (a.position ?? 0) - newPosition;
-                    return (a.position ?? 0) - (b.position ?? 0);
+        if (activeTask.column_id !== targetColumnId) {
+            tasks
+                .filter((t) => t.column_id === activeTask.column_id && t.id !== activeId)
+                .sort(byPosition)
+                .forEach((task, i) => {
+                    updates.push({ id: task.id, column_id: task.column_id, position: i });
                 });
-
-            return updated.map((t) => {
-                const idx = columnTasks.findIndex((ct) => ct.id === t.id);
-                if (idx === -1) return t;
-                return { ...t, position: idx };
-            });
-        });
-
-        try {
-            await updateTask({
-                taskId,
-                updates: {
-                    column_id: targetColumnId,
-                    position: newPosition,
-                },
-            });
-        } catch (err) {
-            console.error('Drag & drop failed:', err);
-            if (previousTasks) {
-                queryClient.setQueryData(['tasks', boardId], previousTasks);
-            }
         }
+
+        await updateTasksBulk(updates);
     };
 
     return (
-        <DragDropProvider onDragEnd={handleDragEnd}>
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+        >
             <button
                 onClick={onAddColumnClick}
                 className="my-5 lg:w-20 lg:h-20 w-10 h-10 flex items-center cursor-pointer justify-center text-4xl text-secondary-text bg-card-bg rounded-full shadow border border-border-primary transition-colors hover:bg-border-primary"
             >
                 +
             </button>
+
             <div className="flex gap-4 overflow-x-auto pb-4">
                 {columns.map((column) => (
                     <Column
                         key={column.id}
                         column={column}
                         tasks={tasks
-                            .filter((task) => task.column_id === column.id)
-                            .sort((a, b) => a.position - b.position)}
+                            .filter((t) => t.column_id === column.id)
+                            .sort(byPosition)}
                         onRename={onRenameColumn}
                         onDelete={onDeleteColumn}
                         onAddTask={() => onAddTask(column.id)}
@@ -120,6 +125,10 @@ export default function BoardContent({
                     />
                 ))}
             </div>
-        </DragDropProvider>
+
+            <DragOverlay>
+                {activeTask ? <TaskCard task={activeTask} onClick={() => { }} /> : null}
+            </DragOverlay>
+        </DndContext>
     );
 }

@@ -24,7 +24,8 @@ export default function Board() {
 
     const {
         createTask,
-        updateTask,
+        updateTask,        // ← ДОБАВЛЕНО
+        updateTasksBulk,
         deleteTask,
         isCreating: isCreatingTask,
         isUpdating,
@@ -71,6 +72,7 @@ export default function Board() {
 
     const handleSaveTask = async (data: TaskFormData) => {
         if (!selectedTask) return;
+        // ✅ используем updateTask, а не updateTasksBulk
         await updateTask({
             taskId: selectedTask.id,
             updates: {
@@ -108,7 +110,7 @@ export default function Board() {
                 boardId={board.id}
                 columns={columns}
                 tasks={tasks}
-                updateTask={updateTask}
+                updateTasksBulk={updateTasksBulk}
                 onAddColumnClick={() => setIsColumnModalOpen(true)}
                 onRenameColumn={(colId, title) => updateColumn({ columnId: colId, updates: { title } })}
                 onDeleteColumn={deleteColumn}

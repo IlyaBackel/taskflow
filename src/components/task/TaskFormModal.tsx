@@ -6,6 +6,7 @@ import Modal from '../shared/Modal';
 import TaskFormFields from './TaskFormFields';
 import type { Task } from '../../types/task';
 import TaskFormButtons from './TaskFormButtons';
+import CommentsSection from './comments/CommentsSection';
 
 interface TaskFormModalProps {
     isOpen: boolean;
@@ -79,7 +80,7 @@ export default function TaskFormModal({
 
     return (
         <Modal onClose={onClose}>
-            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-lg">
+            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                 <h2 className="text-xl font-bold mb-4 text-primary-text">
                     {title}
                 </h2>
@@ -99,6 +100,8 @@ export default function TaskFormModal({
                         onDelete={onDelete}
                     />
                 </form>
+
+                {mode === 'edit' && task && <CommentsSection taskId={task.id} />}
             </div>
         </Modal>
     );

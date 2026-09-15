@@ -58,3 +58,28 @@ export const deleteTask = async (taskId: string): Promise<void> => {
         .eq('id', taskId);
     if (error) throw error;
 };
+
+export const updateTasksBulk = async (
+    updates: Array<{ id: string; column_id: string; position: number }>
+): Promise<void> => {
+    console.log('📤 Bulk update payload:', JSON.stringify(updates, null, 2));
+
+    const results = await Promise.all(
+        updates.map(async ({ id, column_id, position }) => {
+            const { data, error } = await supabase
+                .from('tasks')
+                .update({ column_id, position })
+                .eq('id', id)
+                .select();
+
+            if (error) {
+                console.error(`❌ Update failed for task ${id}:`, error);
+                throw error;
+            }
+            console.log(`✅ Task ${id} updated:`, data);
+            return data;
+        })
+    );
+
+    return results as any;
+};
