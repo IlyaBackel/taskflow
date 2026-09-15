@@ -13,7 +13,6 @@ interface CreateBoardModalProps {
 export default function CreateBoardModal({ isOpen, onClose }: CreateBoardModalProps) {
     const { user } = useUserData();
     const [isLoading, setIsLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
@@ -47,7 +46,6 @@ export default function CreateBoardModal({ isOpen, onClose }: CreateBoardModalPr
                     userId={user?.id || ''}
                     onSubmit={handleSubmit}
                     isLoading={isLoading}
-                    uploading={uploading}
                     onCancel={onClose}
                 />
             </div>

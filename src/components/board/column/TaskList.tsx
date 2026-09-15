@@ -1,4 +1,3 @@
-// src/components/board/column/TaskList.tsx
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { Task } from '../../../types/task';
 import TaskCard from '../../task/TaskCard';

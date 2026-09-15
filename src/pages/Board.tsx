@@ -24,7 +24,7 @@ export default function Board() {
 
     const {
         createTask,
-        updateTask,        // ← ДОБАВЛЕНО
+        updateTask,
         updateTasksBulk,
         deleteTask,
         isCreating: isCreatingTask,
@@ -72,7 +72,6 @@ export default function Board() {
 
     const handleSaveTask = async (data: TaskFormData) => {
         if (!selectedTask) return;
-        // ✅ используем updateTask, а не updateTasksBulk
         await updateTask({
             taskId: selectedTask.id,
             updates: {
@@ -95,15 +94,10 @@ export default function Board() {
     return (
         <div className="p-4 w-full">
             <div className="relative mb-4">
-                <BoardHeader board={board} />
-                <div className="absolute top-4 right-4 flex gap-2">
-                    <button
-                        onClick={() => setIsMembersModalOpen(true)}
-                        className="px-3 py-1.5 text-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg shadow hover:bg-white dark:hover:bg-gray-700 transition-colors"
-                    >
-                        👥 Members
-                    </button>
-                </div>
+                <BoardHeader
+                    board={board}
+                    onMembersClick={() => setIsMembersModalOpen(true)}
+                />
             </div>
 
             <BoardContent

@@ -1,4 +1,3 @@
-// src/components/board/column/Column.tsx
 import { useDroppable } from '@dnd-kit/core';
 import ColumnHeader from './ColumnHeader';
 import TaskList from './TaskList';

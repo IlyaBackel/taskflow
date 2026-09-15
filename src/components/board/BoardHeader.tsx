@@ -1,13 +1,25 @@
+import { useQuery } from '@tanstack/react-query';
+import { fetchProfile } from '../../services/profileService';
 import type { Board } from '../../types/board';
+import type { Profile } from '../../types/profile';
 
 interface BoardHeaderProps {
     board: Board;
+    onMembersClick: () => void;
 }
 
-export default function BoardHeader({ board }: BoardHeaderProps) {
+export default function BoardHeader({ board, onMembersClick }: BoardHeaderProps) {
+    const { data: owner } = useQuery<Profile>({
+        queryKey: ['profile', board.owner_id],
+        queryFn: () => fetchProfile(board.owner_id),
+        enabled: !!board.owner_id,
+        staleTime: 5 * 60 * 1000,
+    });
+    const ownerName = owner?.name || owner?.email || 'Unknown';
+
     return (
-        <div className='w-full flex flex-col sm:flex-row'>
-            <div className="relative h-48 sm:w-110 sm:h-56 md:w-120 md:h-74 lg:w-200 lg:h-90 rounded-xl overflow-hidden shadow-lg">
+        <div className="w-full flex flex-col sm:flex-row gap-4">
+            <div className="relative h-48 sm:w-110 sm:h-56 md:w-120 md:h-74 lg:w-200 lg:h-90 rounded-xl overflow-hidden shadow-lg shrink-0">
                 <div
                     className="w-full h-full bg-cover bg-center bg-no-repeat"
                     style={{
@@ -19,8 +31,22 @@ export default function BoardHeader({ board }: BoardHeaderProps) {
                     {board.title}
                 </h1>
             </div>
-            <div className='flex flex-row items-center justify-center '>
-                <p>Board Info</p>
+
+            <div className="flex flex-col justify-center gap-3 sm:pl-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-primary-text">{board.title}</h2>
+                    <p className="text-sm text-secondary-text mt-1">
+                        Created: {new Date(board.created_at).toLocaleDateString()} by{' '}
+                        <span className="font-medium text-primary-text">{ownerName}</span>
+                    </p>
+                </div>
+
+                <button
+                    onClick={onMembersClick}
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors w-fit"
+                >
+                    👥 Members
+                </button>
             </div>
         </div>
     );

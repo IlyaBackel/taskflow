@@ -42,7 +42,6 @@ export const useTasks = (boardId: string) => {
         },
     });
 
-    // Обёртка над bulk-обновлением с инвалидацией кеша
     const bulkUpdateMutation = useMutation({
         mutationFn: (updates: Array<{ id: string; column_id: string; position: number }>) =>
             updateTasksBulk(updates),
