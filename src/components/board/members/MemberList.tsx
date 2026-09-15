@@ -18,11 +18,11 @@ export default function MemberList({
 }: MemberListProps) {
     return (
         <div>
-            <h3 className="font-medium mb-2 text-[var(--color-text-primary)]">
+            <h3 className="font-medium mb-2 text-primary-text">
                 Current Members
             </h3>
             {members.length === 0 && (
-                <p className="text-sm text-[var(--color-text-secondary)]">No members yet.</p>
+                <p className="text-sm text-secondary-text">No members yet.</p>
             )}
             <ul className="space-y-1">
                 {members.map((member) => {

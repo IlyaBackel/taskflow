@@ -26,24 +26,24 @@ export default function TaskFormFields({ register, control, errors, boardId }: T
             />
 
             <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--color-text-primary)]">
+                <label className="block text-sm font-medium mb-1 text-primary-text">
                     Description
                 </label>
                 <textarea
                     {...register('description')}
                     rows={4}
                     placeholder="Add a description (optional)..."
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] text-[var(--color-text-primary)] placeholder-[var(--color-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                    className="w-full px-3 py-2 rounded-lg border border-border-primary bg-card-bg text-primary-text placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-primary"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--color-text-primary)]">
+                <label className="block text-sm font-medium mb-1 text-primary-text">
                     Priority
                 </label>
                 <select
                     {...register('priority')}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                    className="w-full px-3 py-2 rounded-lg border border-border-primary bg-card-bg text-primary-text focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -52,14 +52,14 @@ export default function TaskFormFields({ register, control, errors, boardId }: T
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-1 text-[var(--color-text-primary)]">
+                <label className="block text-sm font-medium mb-1 text-primary-text">
                     Deadline *
                 </label>
                 <input
                     type="date"
                     min={today}
                     {...register('due_date')}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                    className="w-full px-3 py-2 rounded-lg border border-border-primary bg-card-bg text-primary-text focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 {errors.due_date && (
                     <p className="text-sm text-red-500 mt-1">{errors.due_date.message}</p>

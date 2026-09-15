@@ -66,8 +66,8 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
 
     return (
         <Modal onClose={onClose}>
-            <div className="bg-[var(--color-card-bg)] p-6 rounded-lg shadow-xl w-full max-w-md">
-                <h2 className="text-xl font-bold mb-4 text-[var(--color-text-primary)]">
+            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-md">
+                <h2 className="text-xl font-bold mb-4 text-primary-text">
                     Board Members
                 </h2>
 
@@ -93,7 +93,7 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
                 <div className="mt-4 flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)]"
+                        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover"
                     >
                         Close
                     </button>

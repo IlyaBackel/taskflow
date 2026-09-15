@@ -32,14 +32,14 @@ export default function TaskFormButtons({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-border)] text-[var(--color-text-primary)] transition-colors"
+                    className="px-4 py-2 border border-border-primary rounded-lg hover:bg-border-primary text-primary-text transition-colors"
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-colors"
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 transition-colors"
                 >
                     {isLoading
                         ? mode === 'create' ? 'Creating...' : 'Saving...'

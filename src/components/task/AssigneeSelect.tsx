@@ -16,14 +16,14 @@ export default function AssigneeSelect({
 }: AssigneeSelectProps) {
     return (
         <div>
-            <label className="block text-sm font-medium mb-1 text-[var(--color-text-primary)]">
+            <label className="block text-sm font-medium mb-1 text-primary-text">
                 Assignee *
             </label>
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className={`w-full px-3 py-2 rounded-lg border ${error ? 'border-red-500' : 'border-[var(--color-border)]'
-                    } bg-[var(--color-card-bg)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]`}
+                className={`w-full px-3 py-2 rounded-lg border ${error ? 'border-red-500' : 'border-border-primary'
+                    } bg-card-bg text-primary-text focus:outline-none focus:ring-2 focus:ring-primary`}
             >
                 <option value="">Select assignee...</option>
                 {members.map((member) => {

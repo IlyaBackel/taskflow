@@ -79,8 +79,8 @@ export default function TaskFormModal({
 
     return (
         <Modal onClose={onClose}>
-            <div className="bg-[var(--color-card-bg)] p-6 rounded-lg shadow-xl w-full max-w-lg">
-                <h2 className="text-xl font-bold mb-4 text-[var(--color-text-primary)]">
+            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-lg">
+                <h2 className="text-xl font-bold mb-4 text-primary-text">
                     {title}
                 </h2>
 

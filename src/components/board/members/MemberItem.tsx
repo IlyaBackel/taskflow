@@ -12,7 +12,7 @@ export default function MemberItem({ member, canRemove, isRemoving, onRemove }: 
     if (!profile) return null;
 
     return (
-        <li className="flex justify-between items-center p-2 border-b border-[var(--color-border)]">
+        <li className="flex justify-between items-center p-2 border-b border-border-primary">
             <div className="flex items-center gap-2">
                 {profile.avatar_url ? (
                     <img
@@ -21,15 +21,15 @@ export default function MemberItem({ member, canRemove, isRemoving, onRemove }: 
                         className="w-7 h-7 rounded-full object-cover"
                     />
                 ) : (
-                    <div className="w-7 h-7 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-xs font-bold">
+                    <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
                         {(profile.name || profile.email).charAt(0).toUpperCase()}
                     </div>
                 )}
                 <div>
-                    <span className="font-medium text-[var(--color-text-primary)]">
+                    <span className="font-medium text-primary-text">
                         {profile.name || profile.email}
                     </span>
-                    <span className="text-xs text-[var(--color-text-secondary)] ml-2">
+                    <span className="text-xs text-secondary-text ml-2">
                         {member.role}
                     </span>
                 </div>

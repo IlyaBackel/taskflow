@@ -39,7 +39,7 @@ export default function ColumnHeader({ title, color, onRename, onDelete }: Colum
                 </form>
             ) : (
                 <h3
-                    className="font-semibold cursor-pointer hover:text-[var(--color-primary)]"
+                    className="font-semibold cursor-pointer hover:text-primary"
                     onDoubleClick={() => setIsEditing(true)}
                     style={{ color: color || 'var(--color-text-primary)' }}
                 >
