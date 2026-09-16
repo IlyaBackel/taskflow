@@ -1,28 +1,45 @@
-import { useUserData } from "../../hooks/useUserData";
+import { useUserData } from '../../hooks/useUserData';
+import type { Profile } from '../../types/profile';
 
+interface ProfileAvatarProps {
+    profile?: Profile | null;
+    size?: number;
+    className?: string;
+    onClick?: () => void;
+}
 
+export default function ProfileAvatar({
+    profile: profileProp,
+    size = 40,
+    className = '',
+    onClick,
+}: ProfileAvatarProps) {
+    const { profile: currentProfile, user } = useUserData();
+    const profile = profileProp ?? currentProfile;
+    const fallbackEmail = profile?.email || user?.email;
 
-export default function ProfileAvatar({ size }: { size: number }) {
-    const { profile, user } = useUserData()
+    const avatarUrl = profile?.avatar_url;
+    const initials = (profile?.name || fallbackEmail || '?').charAt(0).toUpperCase();
 
-    if (profile?.avatar_url) {
+    if (avatarUrl) {
         return (
             <img
-                src={profile.avatar_url}
-                alt="Profile Avatar"
-                className="rounded-[50%] bg-primary-hover text-2xl"
-                style={{ width: `${size}rem`, height: `${size}rem` }}
+                src={avatarUrl}
+                alt="Avatar"
+                className={`rounded-full object-cover shrink-0 ${className}`}
+                style={{ width: size, height: size }}
+                onClick={onClick}
             />
         );
     }
 
-    const initials = user.email.charAt(0) || profile?.name?.charAt(0) || '?';
-
     return (
-        <div className={`flex items-center justify-center border-2 rounded-[50%] bg-primary-hover text-2xl`}
-            style={{ width: `${size}rem`, height: `${size}rem`, fontSize: `${size * 0.4}em` }}
+        <div
+            className={`rounded-full bg-primary text-white flex items-center justify-center font-bold shrink-0 ${className}`}
+            style={{ width: size, height: size, fontSize: size * 0.4 }}
+            onClick={onClick}
         >
-            {initials.toUpperCase()}
+            {initials}
         </div>
-    )
+    );
 }

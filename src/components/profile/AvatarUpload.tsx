@@ -1,6 +1,7 @@
 import { useRef, useState, type ChangeEvent } from 'react';
 import { supabase } from '../../services/supabaseClient';
 import ProfileAvatar from '../shared/ProfileAvatar';
+import type { Profile } from '../../types/profile';
 
 interface AvatarUploadProps {
     userId: string;
@@ -15,7 +16,6 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onUploadSuccess
 
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        console.log(file)
         if (!file || !file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
             alert('Please upload an image (max 5MB)');
             return;
@@ -40,17 +40,17 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onUploadSuccess
         }
     };
 
+    const previewProfile: Profile = {
+        id: userId,
+        name: null,
+        email: '',
+        avatar_url: previewUrl,
+    };
+
     return (
         <div className="flex items-center gap-4 flex-wrap">
-            {previewUrl ? (
-                <img
-                    src={previewUrl}
-                    alt="Avatar preview"
-                    className="w-16 h-16 rounded-full object-cover border"
-                />
-            ) : (
-                <ProfileAvatar size={50} />
-            )}
+            <ProfileAvatar profile={previewProfile} size={50} />
+
             <input
                 type="file"
                 ref={fileInputRef}

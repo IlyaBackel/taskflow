@@ -1,4 +1,5 @@
 import type { CommentWithAuthor } from "../../../types/comments";
+import ProfileAvatar from "../../shared/ProfileAvatar";
 
 interface CommentItemProps {
     comment: CommentWithAuthor;
@@ -20,17 +21,7 @@ export default function CommentItem({
 
     return (
         <li className="flex gap-2 p-2 border-b border-border-primary">
-            {profile.avatar_url ? (
-                <img
-                    src={profile.avatar_url}
-                    alt=""
-                    className="w-8 h-8 rounded-full object-cover shrink-0"
-                />
-            ) : (
-                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">
-                    {(profile.name || profile.email).charAt(0).toUpperCase()}
-                </div>
-            )}
+            <ProfileAvatar profile={profile} size={32} />
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex items-baseline gap-2 min-w-0">

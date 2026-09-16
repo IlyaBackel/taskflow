@@ -9,9 +9,9 @@ import {
 import Input from '../shared/Input';
 import GoogleSignInButton from './GoogleOAuthButton';
 
-interface AuthFormProps {
+interface AuthFormProps<T extends LoginFormData | RegisterFormData> {
     mode: 'login' | 'register';
-    onSubmit: (data: LoginFormData | RegisterFormData) => void | Promise<void>;
+    onSubmit: (data: T) => void | Promise<void>;
     isLoading?: boolean;
     error?: string | null;
 }
@@ -22,12 +22,12 @@ interface AuthFormValues {
     name?: string;
 }
 
-export default function AuthForm({
+export default function AuthForm<T extends LoginFormData | RegisterFormData>({
     mode,
     onSubmit,
     isLoading = false,
     error,
-}: AuthFormProps) {
+}: AuthFormProps<T>) {
     const schema = mode === 'login' ? loginSchema : registerSchema;
 
     const {
@@ -42,7 +42,10 @@ export default function AuthForm({
 
     return (
         <div className="flex flex-col gap-6 w-full">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
+            <form
+                onSubmit={handleSubmit((data) => onSubmit(data as T))}
+                className="flex flex-col gap-4 w-full"
+            >
                 {error && (
                     <div className="p-3 text-sm border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md">
                         {error}

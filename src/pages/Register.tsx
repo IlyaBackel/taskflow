@@ -10,6 +10,7 @@ export default function Register() {
     const navigate = useNavigate();
 
     const handleRegister = async (data: RegisterFormData) => {
+        if (!('name' in data)) return;
         try {
             setIsLoading(true);
             setError(null);
@@ -19,29 +20,20 @@ export default function Register() {
                 password: data.password,
                 options: {
                     emailRedirectTo: `${window.location.origin}/login`,
-                    data: {
-                        name: data.name,
-                    },
+                    data: { name: data.name },
                 },
             });
 
             if (signUpError) throw signUpError;
             if (!authData.user) throw new Error('Registration failed');
 
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .upsert({ id: authData.user.id, name: data.name }, { onConflict: 'id' });
-
-            if (profileError) throw profileError;
-
-            console.log(authData.user.confirmed_at);
-
-            authData.user.confirmed_at
-                ? navigate('/boards')
-                : navigate('/confirm-email', { state: { email: data.email } });
-
+            if (authData.user.confirmed_at) {
+                navigate('/boards');
+            } else {
+                navigate('/confirm-email', { state: { email: data.email } });
+            }
         } catch (err) {
-            setError(err.message || 'An unexpected error occurred.');
+            setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
         } finally {
             setIsLoading(false);
         }
@@ -60,7 +52,7 @@ export default function Register() {
                     Please enter your information to create your account.
                 </p>
 
-                <AuthForm
+                <AuthForm<RegisterFormData>
                     mode="register"
                     onSubmit={handleRegister}
                     isLoading={isLoading}

@@ -10,7 +10,7 @@ export default function Profile() {
     return (
         <div className="flex flex-col w-fit gap-5">
             <div className="flex h-fit flex-col sm:flex-row items-center gap-5">
-                <ProfileAvatar size={15} />
+                <ProfileAvatar size={100} />
                 <div className="flex flex-col  gap-1">
                     <p className="text-primary-text text-2xl">{profile?.name}</p>
                     <p className="text-secondary-text text-lg">{user?.email}</p>

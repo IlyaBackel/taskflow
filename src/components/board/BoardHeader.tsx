@@ -9,7 +9,7 @@ interface BoardHeaderProps {
 }
 
 export default function BoardHeader({ board, onMembersClick }: BoardHeaderProps) {
-    const { data: owner } = useQuery<Profile>({
+    const { data: owner } = useQuery<Profile | null>({
         queryKey: ['profile', board.owner_id],
         queryFn: () => fetchProfile(board.owner_id),
         enabled: !!board.owner_id,

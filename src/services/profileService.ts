@@ -5,7 +5,7 @@ export const fetchProfile = async (userId: string) => {
         .from('profiles')
         .select('id, name, avatar_url, email')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
     if (error) throw new Error(error.message);
     return data;

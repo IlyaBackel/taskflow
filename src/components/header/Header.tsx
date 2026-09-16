@@ -18,7 +18,7 @@ export default function Header() {
 
                 <div className="relative">
                     <div onClick={() => setIsOpen(!isOpen)}>
-                        <ProfileAvatar size={4} />
+                        <ProfileAvatar size={50} />
                     </div>
                     {isOpen && (
                         <div className="flex flex-col items-start w-40 gap-4 py-2 justify-around absolute text-start right-0 mt-2 px-5 border border-gray-300 rounded-md shadow-xl bg-primary-bg z-10">

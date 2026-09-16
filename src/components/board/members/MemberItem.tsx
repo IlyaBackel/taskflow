@@ -1,4 +1,5 @@
 import type { BoardMemberWithProfile } from "../../../types/boardMember";
+import ProfileAvatar from "../../shared/ProfileAvatar";
 
 interface MemberItemProps {
     member: BoardMemberWithProfile;
@@ -14,17 +15,7 @@ export default function MemberItem({ member, canRemove, isRemoving, onRemove }: 
     return (
         <li className="flex justify-between items-center p-2 border-b border-border-primary">
             <div className="flex items-center gap-2">
-                {profile.avatar_url ? (
-                    <img
-                        src={profile.avatar_url}
-                        alt=""
-                        className="w-7 h-7 rounded-full object-cover"
-                    />
-                ) : (
-                    <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
-                        {(profile.name || profile.email).charAt(0).toUpperCase()}
-                    </div>
-                )}
+                <ProfileAvatar profile={profile} size={28} />
                 <div>
                     <span className="font-medium text-primary-text">
                         {profile.name || profile.email}

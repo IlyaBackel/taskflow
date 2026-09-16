@@ -39,7 +39,7 @@ export default function Login() {
 
                 <p className='font-light text-sm sm:text-lg text-secondary-text'>Please Inter your email address and password for Login</p>
 
-                <AuthForm
+                <AuthForm<LoginFormData>
                     mode="login"
                     onSubmit={handleLogin}
                     isLoading={isLoading}
