@@ -22,7 +22,7 @@ export default function Modal({ children, onClose }: { children: ReactNode; onCl
             onClick={onClose}
         >
             <div
-                className="w-full max-w-md  bg-primary-bg border border-gray-300 rounded-2xl shadow-2xl"
+                className="w-full max-w-md  bg-primary-bg rounded-2xl shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 {children}

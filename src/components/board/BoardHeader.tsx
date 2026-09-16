@@ -15,6 +15,7 @@ export default function BoardHeader({ board, onMembersClick }: BoardHeaderProps)
         enabled: !!board.owner_id,
         staleTime: 5 * 60 * 1000,
     });
+
     const ownerName = owner?.name || owner?.email || 'Unknown';
 
     return (
@@ -32,20 +33,18 @@ export default function BoardHeader({ board, onMembersClick }: BoardHeaderProps)
                 </h1>
             </div>
 
-            <div className="flex flex-col justify-center gap-3 sm:pl-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-primary-text">{board.title}</h2>
-                    <p className="text-sm text-secondary-text mt-1">
-                        Created: {new Date(board.created_at).toLocaleDateString()} by{' '}
-                        <span className="font-medium text-primary-text">{ownerName}</span>
-                    </p>
-                </div>
+            <div className="flex flex-col justify-center gap-6 sm:pl-4">
+
+                <p className="text-md text-secondary-text mt-2">
+                    Created: {new Date(board.created_at).toLocaleDateString()} by{' '}
+                    <span className="font-medium text-lg text-primary-text">{ownerName}</span>
+                </p>
 
                 <button
                     onClick={onMembersClick}
                     className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors w-fit"
                 >
-                    👥 Members
+                    Members
                 </button>
             </div>
         </div>

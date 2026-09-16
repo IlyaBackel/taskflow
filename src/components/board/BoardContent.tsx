@@ -110,7 +110,7 @@ export default function BoardContent({
                 +
             </button>
 
-            <div className="flex gap-4 overflow-x-auto pb-4">
+            <div className="flex gap-4 overflow-x-auto pb-4 items-start">
                 {columns.map((column) => (
                     <Column
                         key={column.id}

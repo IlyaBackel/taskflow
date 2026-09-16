@@ -37,9 +37,9 @@ export default function Boards() {
     if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
 
     return (
-        <div className="sm:p-4 w-full">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold text-primary-text">Your Boards</h1>
+        <div className="p-1 sm:p-3 w-full">
+            <div className="flex justify-between items-center mb-10">
+                <h1 className="text-3xl font-bold text-primary-text">Your Boards</h1>
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors"
@@ -48,7 +48,7 @@ export default function Boards() {
                 </button>
             </div>
 
-            <section className="mb-10">
+            <section className="mb-5 sm:mb-20 ml-5 sm:ml-5 ">
                 <h2 className="text-xl font-semibold mb-3 text-primary-text">Created by me</h2>
                 {myBoards.length === 0 ? (
                     <p className="text-secondary-text">You don't have any boards yet. Create one!</p>
@@ -69,7 +69,7 @@ export default function Boards() {
             </section>
 
             {sharedBoards.length > 0 && (
-                <section>
+                <section className='ml-5 sm:ml-5'>
                     <h2 className="text-xl font-semibold mb-3 text-primary-text">Shared with me</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {sharedBoards.map((board) => (

@@ -21,7 +21,7 @@ export default function Column({ column, tasks, onRename, onDelete, onAddTask, o
     return (
         <div
             ref={setNodeRef}
-            className="min-w-62.5 bg-card-bg p-3 rounded shadow border-l-4"
+            className="min-w-62.5 bg-card-bg p-3 rounded shadow border-l-4 pb-9"
             style={{ borderLeftColor: column.color || '#e2e8f0' }}
         >
             <ColumnHeader
@@ -29,14 +29,10 @@ export default function Column({ column, tasks, onRename, onDelete, onAddTask, o
                 color={column.color}
                 onRename={(t) => onRename(column.id, t)}
                 onDelete={() => onDelete(column.id)}
+                onAddTask={onAddTask}
             />
             <TaskList tasks={tasks} onTaskClick={onTaskClick} />
-            <button
-                onClick={onAddTask}
-                className="mt-2 w-full text-sm text-secondary-text hover:text-primary hover:bg-border-primary py-2 rounded transition-colors flex items-center justify-center gap-1"
-            >
-                + Add task
-            </button>
+
         </div>
     );
 }

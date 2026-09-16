@@ -62,7 +62,6 @@ export const deleteTask = async (taskId: string): Promise<void> => {
 export const updateTasksBulk = async (
     updates: Array<{ id: string; column_id: string; position: number }>
 ): Promise<void> => {
-    console.log('📤 Bulk update payload:', JSON.stringify(updates, null, 2));
 
     const results = await Promise.all(
         updates.map(async ({ id, column_id, position }) => {
@@ -72,11 +71,7 @@ export const updateTasksBulk = async (
                 .eq('id', id)
                 .select();
 
-            if (error) {
-                console.error(`❌ Update failed for task ${id}:`, error);
-                throw error;
-            }
-            console.log(`✅ Task ${id} updated:`, data);
+            if (error) throw error;
             return data;
         })
     );
