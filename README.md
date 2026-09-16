@@ -7,11 +7,13 @@ TaskFlow — это веб-приложение для управления за
 
 ## Запуск локально
 
+```bash
 git clone <repo-url>
 cd taskflow
 npm install
 cp .env.example .env
 npm run dev
+```
 
 
 ## Уровни реализации
