@@ -1,75 +1,38 @@
-# React + TypeScript + Vite
+# TaskFlow
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Деплой:** https://taskflow-nine-virid.vercel.app/
 
-Currently, two official plugins are available:
+TaskFlow — это веб-приложение для управления задачами на канбан-досках, созданное на React, TypeScript и Supabase. Пользователи могут регистрироваться по email или через Google, создавать доски с обложками, добавлять колонки с настраиваемыми цветами и перемещать задачи между ними с помощью drag & drop. Каждая задача поддерживает описание, приоритет, дедлайн, исполнителя из числа участников доски и комментарии. Реализованы совместный доступ с ролями owner/member, realtime-синхронизация изменений между пользователями, адаптивная вёрстка и тёмная тема.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## React Compiler
+## Запуск локально
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+git clone <repo-url>
+cd taskflow
+npm install
+cp .env.example .env
+# заполнить VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY
+npm run dev
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Уровни реализации
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Реализованы два полных уровня и большая часть третьего.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Уровень 1 (MVP) — реализован полностью
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Аутентификация по email с подтверждением и защитой роутов, колонки с настраиваемыми цветами, переименованием и удалением, задачи с drag & drop между колонками и внутри них, адаптивная вёрстка, состояния загрузки.
 
-```
+### Уровень 2 (Full) — реализован почти полностью
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Детали задачи с описанием, приоритетом, дедлайном и исполнителем, комментарии с автором и временем, realtime-обновления через Supabase, профиль с именем и аватаром, совместный доступ с ролями owner/member. Единственное, что не сделано из этого уровня — приглашение пользователя по почте: вместо этого реализовано добавление участников доски через поиск по имени или email прямо в модалке.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Уровень 3 (Bonus) — реализован частично
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Реализованы тёмная тема с автоопределением по времени суток и вход через Google OAuth. Не реализованы фильтрация задач по приоритету, исполнителю и дедлайну (вместо неё есть ручная сортировка drag & drop, которая закрывает похожую потребность, но в будущем фильтры стоит добавить для вариативности), поиск задач по названию (в проекте реализован другой поиск — поиск пользователей для добавления на доску), лог активности на доске и горячая клавиша N для создания новой задачи.
 
-```
+---
+
+## Планы на будущее
+
+В ближайшем будущем я бы закрыл оставшиеся пробелы: приглашение по почте, фильтры и поиск задач, горячие клавиши, а лог активности превратил бы в полезный инструмент с интеграцией Slack, чтобы команда пользователей получала уведомления об изменениях на доске. Также хочется поработать над дизайном: сделать его более живым и визуально близким к эстетике Pinterest — карточки, сетка, обложки. Параллельно рефакторил бы код, выносил логику и по мере получения опыта оптимизировал производительность, добавлял бы разные прикольные фичи, которые замечаю или придумываю, — чтобы продуктом было интересно пользоваться. А также продолжал бы улучшать читаемость и структуру проекта, чтобы код было приятно открыть, понять и доработать.
