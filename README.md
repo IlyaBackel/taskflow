@@ -11,7 +11,6 @@ git clone <repo-url>
 cd taskflow
 npm install
 cp .env.example .env
-# заполнить VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY
 npm run dev
 
 
