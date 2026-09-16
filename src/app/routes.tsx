@@ -1,32 +1,46 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import Boards from "../pages/Boards";
-import ConfirmEmail from "../pages/ConfirmEmail";
-import MainLayout from "./layouts/MainLayout";
-import ProtectedRoute from "./ProtectedRoute";
-import Profile from "../pages/Profile";
-import PublicRoute from "./PublicRoute";
-import Board from "../pages/Board";
+import { lazy, Suspense } from 'react';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import ProtectedRoute from './ProtectedRoute';
+import PublicRoute from './PublicRoute';
+
+const Login = lazy(() => import('../pages/Login'));
+const Register = lazy(() => import('../pages/Register'));
+const Boards = lazy(() => import('../pages/Boards'));
+const ConfirmEmail = lazy(() => import('../pages/ConfirmEmail'));
+const Profile = lazy(() => import('../pages/Profile'));
+const Board = lazy(() => import('../pages/Board'));
+
+const PageLoader = () => (
+    <div className="min-h-screen flex items-center justify-center bg-primary-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
+    </div>
+);
+
+const withSuspense = (element: React.ReactNode) => (
+    <Suspense fallback={<PageLoader />}>{element}</Suspense>
+);
 
 export const routes = createBrowserRouter([
     {
-        path: "/login",
-        element: (
+        path: '/login',
+        element: withSuspense(
             <PublicRoute>
                 <Login />
-            </PublicRoute>)
+            </PublicRoute>
+        ),
     },
     {
-        path: "/register",
-        element: (
+        path: '/register',
+        element: withSuspense(
             <PublicRoute>
                 <Register />
-            </PublicRoute>)
+            </PublicRoute>
+        ),
     },
     {
         path: '/confirm-email',
-        element: <ConfirmEmail />,
+        element: withSuspense(<ConfirmEmail />),
     },
     {
         element: (
@@ -36,9 +50,9 @@ export const routes = createBrowserRouter([
         ),
         children: [
             { path: '/', element: <Navigate to="/boards" replace /> },
-            { path: '/boards', element: <Boards /> },
-            { path: '/profile', element: <Profile /> },
-            { path: '/board/:id', element: <Board /> },
+            { path: '/boards', element: withSuspense(<Boards />) },
+            { path: '/profile', element: withSuspense(<Profile />) },
+            { path: '/board/:id', element: withSuspense(<Board />) },
         ],
     },
-])
+]);
