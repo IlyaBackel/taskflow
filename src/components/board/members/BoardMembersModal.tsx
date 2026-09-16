@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useBoardMembers } from '../../../hooks/useBoardMembers';
 import { useUserData } from '../../../hooks/useUserData';
 import Modal from '../../shared/Modal';
@@ -15,7 +15,6 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
     const { members, searchUsers, addMember, removeMember, isAdding, isRemoving } =
         useBoardMembers(boardId);
     const { user } = useUserData();
-    const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
@@ -23,28 +22,29 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
         (m) => m.profiles[0]?.id === user?.id && m.role === 'owner'
     );
 
-    const handleSearch = async (query: string) => {
-        setSearchQuery(query);
-        if (!query.trim()) {
-            setSearchResults([]);
-            return;
-        }
-        setIsSearching(true);
-        try {
-            const results = await searchUsers(query);
-            const memberIds = members?.map((m) => m.profiles[0]?.id) || [];
-            const filtered = results.filter((u) => !memberIds.includes(u.id));
-            setSearchResults(filtered);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setIsSearching(false);
-        }
-    };
+    const handleSearch = useCallback(
+        async (query: string) => {
+            if (!query.trim()) {
+                setSearchResults([]);
+                return;
+            }
+            setIsSearching(true);
+            try {
+                const results = await searchUsers(query);
+                const memberIds = members?.map((m) => m.profiles[0]?.id) || [];
+                const filtered = results.filter((u) => !memberIds.includes(u.id));
+                setSearchResults(filtered);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setIsSearching(false);
+            }
+        },
+        [members, searchUsers]
+    );
 
     const handleAdd = async (userId: string) => {
         await addMember({ userId });
-        setSearchQuery('');
         setSearchResults([]);
     };
 
@@ -73,7 +73,6 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
 
                 {isCurrentUserOwner && (
                     <MemberSearch
-                        searchQuery={searchQuery}
                         searchResults={searchResults}
                         isSearching={isSearching}
                         isAdding={isAdding}

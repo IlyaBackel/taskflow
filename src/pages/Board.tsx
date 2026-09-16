@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useBoard } from '../hooks/useBoard';
 import { useColumns } from '../hooks/useColumns';
 import { useTasks } from '../hooks/useTasks';
+import { useRealtimeBoard } from '../hooks/useRealtimeBoard';
 import BoardHeader from '../components/board/BoardHeader';
 import BoardContent from '../components/board/BoardContent';
 import CreateColumnModal from '../components/board/CreateColumnModal';
@@ -15,21 +16,11 @@ export default function Board() {
     const { id } = useParams<{ id: string }>();
     const { board, columns, tasks, isLoading, error } = useBoard(id!);
 
-    const {
-        createColumn,
-        updateColumn,
-        deleteColumn,
-        isCreating: isCreatingColumn,
-    } = useColumns(id!);
+    useRealtimeBoard(id);
 
-    const {
-        createTask,
-        updateTask,
-        updateTasksBulk,
-        deleteTask,
-        isCreating: isCreatingTask,
-        isUpdating,
-    } = useTasks(id!);
+    const { createColumn, updateColumn, deleteColumn, isCreating: isCreatingColumn } = useColumns(id!);
+
+    const { createTask, updateTask, updateTasksBulk, deleteTask, isCreating: isCreatingTask, isUpdating } = useTasks(id!);
 
     const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
     const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);

@@ -1,7 +1,8 @@
-import type { Profile } from "../../../types/profile";
+import { useEffect, useRef, useState } from 'react';
+import { useDebounce } from '../../../hooks/useDebounce';
+import type { Profile } from '../../../types/profile';
 
 interface MemberSearchProps {
-    searchQuery: string;
     searchResults: Profile[];
     isSearching: boolean;
     isAdding: boolean;
@@ -10,20 +11,31 @@ interface MemberSearchProps {
 }
 
 export default function MemberSearch({
-    searchQuery,
     searchResults,
     isSearching,
     isAdding,
     onSearch,
     onAdd,
 }: MemberSearchProps) {
+    const [query, setQuery] = useState('');
+    const debouncedQuery = useDebounce(query, 300);
+
+    const onSearchRef = useRef(onSearch);
+    useEffect(() => {
+        onSearchRef.current = onSearch;
+    });
+
+    useEffect(() => {
+        onSearchRef.current(debouncedQuery);
+    }, [debouncedQuery]);
+
     return (
         <div className="mb-4">
             <input
                 type="text"
                 placeholder="Search users by name or email..."
-                value={searchQuery}
-                onChange={(e) => onSearch(e.target.value)}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className="w-full border border-border-primary rounded-lg px-3 py-2 bg-card-bg text-primary-text"
             />
             {isSearching && (
