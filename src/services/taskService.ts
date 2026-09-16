@@ -12,6 +12,12 @@ interface CreateTaskParams {
     assignee_id?: string;
 }
 
+interface TaskPositionUpdate {
+    id: string;
+    column_id: string;
+    position: number;
+}
+
 export const createTask = async ({
     columnId,
     title,
@@ -59,22 +65,15 @@ export const deleteTask = async (taskId: string): Promise<void> => {
     if (error) throw error;
 };
 
-export const updateTasksBulk = async (
-    updates: Array<{ id: string; column_id: string; position: number }>
-): Promise<void> => {
-
-    const results = await Promise.all(
+export const updateTasksBulk = async (updates: TaskPositionUpdate[]): Promise<void> => {
+    await Promise.all(
         updates.map(async ({ id, column_id, position }) => {
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('tasks')
                 .update({ column_id, position })
-                .eq('id', id)
-                .select();
+                .eq('id', id);
 
             if (error) throw error;
-            return data;
         })
     );
-
-    return results as any;
 };

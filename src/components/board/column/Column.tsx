@@ -2,9 +2,10 @@ import { useDroppable } from '@dnd-kit/core';
 import ColumnHeader from './ColumnHeader';
 import TaskList from './TaskList';
 import type { Task } from '../../../types/task';
+import type { Column } from '../../../types/column';
 
 interface ColumnProps {
-    column: any;
+    column: Column;
     tasks: Task[];
     onRename: (id: string, title: string) => void;
     onDelete: (id: string) => void;

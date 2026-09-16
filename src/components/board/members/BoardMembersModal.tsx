@@ -4,6 +4,7 @@ import { useUserData } from '../../../hooks/useUserData';
 import Modal from '../../shared/Modal';
 import MemberSearch from './MemberSearch';
 import MemberList from './MemberList';
+import type { Profile } from '../../../types/profile';
 
 interface BoardMembersModalProps {
     isOpen: boolean;
@@ -15,7 +16,7 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
     const { members, searchUsers, addMember, removeMember, isAdding, isRemoving } =
         useBoardMembers(boardId);
     const { user } = useUserData();
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<Profile[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
     const isCurrentUserOwner = members?.some(

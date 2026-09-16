@@ -1,6 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, registerSchema, type LoginFormData, type RegisterFormData } from '../../schemas/auth.schema';
+import {
+    loginSchema,
+    registerSchema,
+    type LoginFormData,
+    type RegisterFormData,
+} from '../../schemas/auth.schema';
 import Input from '../shared/Input';
 import GoogleSignInButton from './GoogleOAuthButton';
 
@@ -9,6 +14,12 @@ interface AuthFormProps {
     onSubmit: (data: LoginFormData | RegisterFormData) => void | Promise<void>;
     isLoading?: boolean;
     error?: string | null;
+}
+
+interface AuthFormValues {
+    email: string;
+    password: string;
+    name?: string;
 }
 
 export default function AuthForm({
@@ -23,7 +34,7 @@ export default function AuthForm({
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<LoginFormData | RegisterFormData>({
+    } = useForm<AuthFormValues>({
         resolver: zodResolver(schema),
     });
 
@@ -33,7 +44,7 @@ export default function AuthForm({
         <div className="flex flex-col gap-6 w-full">
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
                 {error && (
-                    <div className="p-3 text-sm   border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md">
+                    <div className="p-3 text-sm border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md">
                         {error}
                     </div>
                 )}
@@ -44,7 +55,7 @@ export default function AuthForm({
                         type="text"
                         placeholder="Your full name"
                         {...register('name')}
-                        error={(errors as any).name?.message}
+                        error={errors.name?.message}
                     />
                 )}
 
