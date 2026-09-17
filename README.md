@@ -34,11 +34,11 @@ TaskFlow — это веб-приложение для управления за
 
 |                                 Список досок                                  |                                    Доска                                    |
 | :---------------------------------------------------------------------------: | :-------------------------------------------------------------------------: |
-| <img src="./screenshots/boards-mobile.PNG" width="280" alt="Boards mobile" /> | <img src="./screenshots/board-mobile.png" width="280" alt="Board mobile" /> |
+| <img src="./screenshots/boards-mobile.PNG" width="280" alt="Boards mobile" /> | <img src="./screenshots/board-mobile.PNG" width="280" alt="Board mobile" /> |
 
 |                                    Создание задачи                                     |
 | :------------------------------------------------------------------------------------: |
-| <img src="./screenshots/createTask-mobile.png" width="280" alt="Create task mobile" /> |
+| <img src="./screenshots/createTask-mobile.PNG" width="280" alt="Create task mobile" /> |
 
 ## Запуск локально
 
