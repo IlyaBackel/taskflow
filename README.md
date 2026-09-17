@@ -4,6 +4,41 @@
 
 TaskFlow — это веб-приложение для управления задачами на канбан-досках, созданное на React, TypeScript и Supabase. Пользователи могут регистрироваться по email или через Google, создавать доски с обложками, добавлять колонки с настраиваемыми цветами и перемещать задачи между ними с помощью drag & drop. Каждая задача поддерживает описание, приоритет, дедлайн, исполнителя из числа участников доски и комментарии. Реализованы совместный доступ с ролями owner/member, realtime-синхронизация изменений между пользователями, адаптивная вёрстка и тёмная тема.
 
+**Страница входа**
+
+![Login](./screenshots/login-desktop.png)
+
+**Список досок**
+
+![Boards desktop](./screenshots/boards-desktop.png)
+
+**Доска с задачами**
+
+![Board desktop](./screenshots/board-desktop.png)
+
+**Управление участниками**
+
+![Board members](./screenshots/boardMembers-desktop.png)
+
+**Создание задачи**
+
+![Create task desktop](./screenshots/createTask-desktop.png)
+
+**Редактирование профиля**
+
+![Edit profile desktop](./screenshots/editProfile-desktop.png)
+
+---
+
+### Мобильная версия
+
+|                                 Список досок                                  |                                    Доска                                    |
+| :---------------------------------------------------------------------------: | :-------------------------------------------------------------------------: |
+| <img src="./screenshots/boards-mobile.PNG" width="280" alt="Boards mobile" /> | <img src="./screenshots/board-mobile.png" width="280" alt="Board mobile" /> |
+
+|                                    Создание задачи                                     |
+| :------------------------------------------------------------------------------------: |
+| <img src="./screenshots/createTask-mobile.png" width="280" alt="Create task mobile" /> |
 
 ## Запуск локально
 
@@ -14,7 +49,6 @@ npm install
 cp .env.example .env
 npm run dev
 ```
-
 
 ## Уровни реализации
 
