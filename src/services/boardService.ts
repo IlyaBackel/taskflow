@@ -59,7 +59,7 @@ export const createBoard = async (title: string, ownerId: string, coverImage?: s
         return board;
     } catch (error) {
         console.error('Error creating board:', error);
-        throw new Error(error instanceof Error ? error.message : 'Failed to create board');
+        throw new Error(error instanceof Error ? error.message : 'Failed to create board', { cause: error });
     }
 };
 

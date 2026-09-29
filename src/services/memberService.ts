@@ -33,10 +33,11 @@ export const fetchBoardMembers = async (boardId: string): Promise<BoardMemberWit
     const profileMap: Record<string, Profile> = {};
     profiles?.forEach(p => { profileMap[p.id] = p; });
 
-    return members.map(member => ({
-        ...member,
-        profiles: profileMap[member.user_id] ? [profileMap[member.user_id]] : [],
-    }));
+    return members.flatMap((member) => {
+        const profile = profileMap[member.user_id];
+        if (!profile) return [];
+        return [{ ...member, profiles: [profile] }];
+    });
 };
 
 export const addBoardMember = async (boardId: string, userId: string, role: 'member' | 'owner' = 'member') => {

@@ -23,10 +23,13 @@ export const fetchComments = async (taskId: string): Promise<CommentWithAuthor[]
     const profileMap: Record<string, Profile> = {};
     profiles?.forEach((p) => { profileMap[p.id] = p; });
 
-    return comments.map((c) => ({
-        ...c,
-        profiles: profileMap[c.user_id] ? [profileMap[c.user_id]] : [],
-    }));
+    return comments
+        .map((c) => {
+            const profile = profileMap[c.user_id];
+            if (!profile) return null;
+            return { ...c, profiles: [profile] };
+        })
+        .filter((c): c is CommentWithAuthor => c !== null);
 };
 
 export const addComment = async (
