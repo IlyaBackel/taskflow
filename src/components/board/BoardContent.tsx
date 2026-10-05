@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
     DndContext,
     DragOverlay,
@@ -47,6 +47,8 @@ export default function BoardContent({
     const [activeTask, setActiveTask] = useState<Task | null>(null);
     const queryClient = useQueryClient();
 
+    const dragStartColumnRef = useRef<string | null>(null);
+
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
     );
@@ -57,7 +59,11 @@ export default function BoardContent({
     };
 
     const handleDragStart = ({ active }: DragStartEvent) => {
-        setActiveTask(tasks.find((t) => t.id === active.id) ?? null);
+        const task = tasks.find((t) => t.id === active.id);
+        if (task) {
+            setActiveTask(task);
+            dragStartColumnRef.current = task.column_id;
+        }
     };
 
     const handleDragOver = ({ active, over }: DragOverEvent) => {
@@ -81,13 +87,29 @@ export default function BoardContent({
 
     const handleDragEnd = async ({ active, over }: DragEndEvent) => {
         setActiveTask(null);
-        if (!over) return;
+
+        const originalColumnId = dragStartColumnRef.current;
+        dragStartColumnRef.current = null;
+
+        if (!over || !originalColumnId) return;
 
         const overId = String(over.id);
         const targetColumnId = findColumnId(overId);
         if (!targetColumnId) return;
 
-        const result = reorderTasks(tasks, String(active.id), overId, targetColumnId);
+        const activeTask = tasks.find((t) => t.id === active.id);
+        if (!activeTask) return;
+
+        const tasksWithOriginal = tasks.map((t) =>
+            t.id === activeTask.id ? { ...t, column_id: originalColumnId } : t
+        );
+
+        const result = reorderTasks(
+            tasksWithOriginal,
+            String(active.id),
+            overId,
+            targetColumnId
+        );
         if (!result) return;
 
         const previous = queryClient.getQueryData<Task[]>(['tasks', boardId]);
