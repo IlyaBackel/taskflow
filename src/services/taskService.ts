@@ -66,14 +66,15 @@ export const deleteTask = async (taskId: string): Promise<void> => {
 };
 
 export const updateTasksBulk = async (updates: TaskPositionUpdate[]): Promise<void> => {
-    await Promise.all(
-        updates.map(async ({ id, column_id, position }) => {
-            const { error } = await supabase
-                .from('tasks')
-                .update({ column_id, position })
-                .eq('id', id);
+    if (updates.length === 0) return;
 
-            if (error) throw error;
-        })
-    );
+    const { error } = await supabase.rpc('reorder_tasks', {
+        updates: updates.map(({ id, column_id, position }) => ({
+            id,
+            column_id,
+            position,
+        })),
+    });
+
+    if (error) throw new Error(error.message);
 };

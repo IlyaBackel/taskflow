@@ -7,12 +7,15 @@ import {
     useSensors,
     closestCorners,
     type DragStartEvent,
+    type DragOverEvent,
     type DragEndEvent,
 } from '@dnd-kit/core';
+import { useQueryClient } from '@tanstack/react-query';
 import Column from './column/Column';
 import TaskCard from '../task/TaskCard';
 import type { Column as ColumnType } from '../../types/column';
 import type { Task } from '../../types/task';
+import { reorderTasks } from '../../utils/reorderTasks';
 
 interface BoardContentProps {
     boardId: string;
@@ -31,6 +34,7 @@ interface BoardContentProps {
 const byPosition = (a: Task, b: Task) => a.position - b.position;
 
 export default function BoardContent({
+    boardId,
     columns,
     tasks,
     updateTasksBulk,
@@ -41,17 +45,22 @@ export default function BoardContent({
     onTaskClick,
 }: BoardContentProps) {
     const [activeTask, setActiveTask] = useState<Task | null>(null);
+    const queryClient = useQueryClient();
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
     );
 
-    const handleDragStart = (event: DragStartEvent) => {
-        setActiveTask(tasks.find((t) => t.id === event.active.id) ?? null);
+    const findColumnId = (id: string): string | null => {
+        if (columns.some((c) => c.id === id)) return id;
+        return tasks.find((t) => t.id === id)?.column_id ?? null;
     };
 
-    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
-        setActiveTask(null);
+    const handleDragStart = ({ active }: DragStartEvent) => {
+        setActiveTask(tasks.find((t) => t.id === active.id) ?? null);
+    };
+
+    const handleDragOver = ({ active, over }: DragOverEvent) => {
         if (!over) return;
 
         const activeId = String(active.id);
@@ -60,40 +69,36 @@ export default function BoardContent({
         const activeTask = tasks.find((t) => t.id === activeId);
         if (!activeTask) return;
 
-        const targetColumnId = columns.some((c) => c.id === overId)
-            ? overId
-            : tasks.find((t) => t.id === overId)?.column_id;
+        const targetColumnId = findColumnId(overId);
+        if (!targetColumnId || activeTask.column_id === targetColumnId) return;
+
+        queryClient.setQueryData<Task[]>(['tasks', boardId], (old = []) =>
+            old.map((t) =>
+                t.id === activeId ? { ...t, column_id: targetColumnId } : t
+            )
+        );
+    };
+
+    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+        setActiveTask(null);
+        if (!over) return;
+
+        const overId = String(over.id);
+        const targetColumnId = findColumnId(overId);
         if (!targetColumnId) return;
 
-        const targetTasks = tasks
-            .filter((t) => t.column_id === targetColumnId && t.id !== activeId)
-            .sort(byPosition);
+        const result = reorderTasks(tasks, String(active.id), overId, targetColumnId);
+        if (!result) return;
 
-        const overIndex = targetTasks.findIndex((t) => t.id === overId);
-        const newIndex = overIndex >= 0 ? overIndex : targetTasks.length;
+        const previous = queryClient.getQueryData<Task[]>(['tasks', boardId]);
+        queryClient.setQueryData(['tasks', boardId], result.newTasks);
 
-        const newOrder = [
-            ...targetTasks.slice(0, newIndex),
-            activeTask,
-            ...targetTasks.slice(newIndex),
-        ];
-
-        const updates = newOrder.map((task, i) => ({
-            id: task.id,
-            column_id: targetColumnId,
-            position: i,
-        }));
-
-        if (activeTask.column_id !== targetColumnId) {
-            tasks
-                .filter((t) => t.column_id === activeTask.column_id && t.id !== activeId)
-                .sort(byPosition)
-                .forEach((task, i) => {
-                    updates.push({ id: task.id, column_id: task.column_id, position: i });
-                });
+        try {
+            await updateTasksBulk(result.updates);
+        } catch (err) {
+            console.error('Reorder failed:', err);
+            if (previous) queryClient.setQueryData(['tasks', boardId], previous);
         }
-
-        await updateTasksBulk(updates);
     };
 
     return (
@@ -101,6 +106,7 @@ export default function BoardContent({
             sensors={sensors}
             collisionDetection={closestCorners}
             onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
         >
             <button

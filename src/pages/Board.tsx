@@ -17,21 +17,22 @@ export default function Board() {
 
     const { board, columns, tasks, isLoading, error } = useBoard(id!);
 
-    if (isLoading) return <div className="p-4">Loading board...</div>;
-    if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
-    if (!board || !id) return <div className="p-4">Board not found</div>;
-
     useRealtimeBoard(id);
 
-    const { createColumn, updateColumn, deleteColumn, isCreating: isCreatingColumn } = useColumns(id);
+    const { createColumn, updateColumn, deleteColumn, isCreating: isCreatingColumn } = useColumns(id!);
 
-    const { createTask, updateTask, updateTasksBulk, deleteTask, isCreating: isCreatingTask, isUpdating } = useTasks(id);
+    const { createTask, updateTask, updateTasksBulk, deleteTask, isCreating: isCreatingTask, isUpdating } = useTasks(id!);
 
     const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
     const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
     const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
     const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+    if (isLoading) return <div className="p-4">Loading board...</div>;
+    if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
+    if (!board || !id) return <div className="p-4">Board not found</div>;
+
 
     const handleAddColumn = async (title: string, color: string) => {
         await createColumn({ title, position: columns.length, color });
