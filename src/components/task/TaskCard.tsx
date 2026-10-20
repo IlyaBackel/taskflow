@@ -2,20 +2,21 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '../../types/task';
 import { getPriorityColor } from '../../utils/priority';
+import { memo } from 'react';
 
 interface TaskCardProps {
     task: Task;
     onClick: (task: Task) => void;
 }
 
-export default function TaskCard({ task, onClick }: TaskCardProps) {
+function TaskCard({ task, onClick }: TaskCardProps) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
         useSortable({ id: task.id, data: { type: 'task', task } });
 
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.4 : 1,
+        opacity: isDragging ? 0.3 : 1,
     };
 
     return (
@@ -45,3 +46,5 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         </div>
     );
 }
+
+export default memo(TaskCard);

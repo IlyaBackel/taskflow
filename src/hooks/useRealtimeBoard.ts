@@ -16,22 +16,23 @@ export const useRealtimeBoard = (boardId?: string) => {
         const channel = supabase
             .channel(`board-${boardId}`)
 
-            .on<Task>(
+            .on(
                 'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'tasks',
-                    filter: `board_id=eq.${boardId}`,
-                },
+                { event: '*', schema: 'public', table: 'tasks', filter: `board_id=eq.${boardId}` },
                 (payload) => {
                     const { eventType, new: newRow, old: oldRow } = payload;
+
                     queryClient.setQueryData<Task[]>(['tasks', boardId], (old = []) => {
-                        if (eventType === 'INSERT') return [...old, newRow];
-                        if (eventType === 'UPDATE')
-                            return old.map((t) => (t.id === newRow.id ? newRow : t));
-                        if (eventType === 'DELETE')
-                            return old.filter((t) => t.id !== oldRow.id);
+                        if (eventType === 'INSERT') {
+                            if (old.some((t) => t.id === (newRow as Task).id)) return old;
+                            return [...old, newRow as Task];
+                        }
+                        if (eventType === 'UPDATE') {
+                            return old.map((t) => (t.id === (newRow as Task).id ? (newRow as Task) : t));
+                        }
+                        if (eventType === 'DELETE') {
+                            return old.filter((t) => t.id !== (oldRow as Task).id);
+                        }
                         return old;
                     });
                 }
@@ -47,12 +48,20 @@ export const useRealtimeBoard = (boardId?: string) => {
                 },
                 (payload) => {
                     const { eventType, new: newRow, old: oldRow } = payload;
+                    const inserted = newRow as Column;
+                    const deleted = oldRow as Column;
+
                     queryClient.setQueryData<Column[]>(['columns', boardId], (old = []) => {
-                        if (eventType === 'INSERT') return [...old, newRow];
-                        if (eventType === 'UPDATE')
-                            return old.map((c) => (c.id === newRow.id ? newRow : c));
-                        if (eventType === 'DELETE')
-                            return old.filter((c) => c.id !== oldRow.id);
+                        if (eventType === 'INSERT') {
+                            if (old.some((c) => c.id === inserted.id)) return old;
+                            return [...old, inserted];
+                        }
+                        if (eventType === 'UPDATE') {
+                            return old.map((c) => (c.id === inserted.id ? inserted : c));
+                        }
+                        if (eventType === 'DELETE') {
+                            return old.filter((c) => c.id !== deleted.id);
+                        }
                         return old;
                     });
                 }

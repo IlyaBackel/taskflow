@@ -1,16 +1,8 @@
 import { useState, useRef } from 'react';
 import {
-    DndContext,
-    DragOverlay,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    closestCorners,
-    type DragStartEvent,
-    type DragOverEvent,
-    type DragEndEvent,
+    DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners,
+    type DragStartEvent, type DragEndEvent,
 } from '@dnd-kit/core';
-import { useQueryClient } from '@tanstack/react-query';
 import Column from './column/Column';
 import TaskCard from '../task/TaskCard';
 import type { Column as ColumnType } from '../../types/column';
@@ -21,9 +13,10 @@ interface BoardContentProps {
     boardId: string;
     columns: ColumnType[];
     tasks: Task[];
-    updateTasksBulk: (
-        updates: Array<{ id: string; column_id: string; position: number }>
-    ) => Promise<void>;
+    updateTasksBulk: (args: {
+        updates: Array<{ id: string; column_id: string; position: number }>;
+        newTasks: Task[];
+    }) => Promise<void>;
     onAddColumnClick: () => void;
     onRenameColumn: (columnId: string, title: string) => void;
     onDeleteColumn: (columnId: string) => void;
@@ -34,19 +27,10 @@ interface BoardContentProps {
 const byPosition = (a: Task, b: Task) => a.position - b.position;
 
 export default function BoardContent({
-    boardId,
-    columns,
-    tasks,
-    updateTasksBulk,
-    onAddColumnClick,
-    onRenameColumn,
-    onDeleteColumn,
-    onAddTask,
-    onTaskClick,
+    columns, tasks, updateTasksBulk,
+    onAddColumnClick, onRenameColumn, onDeleteColumn, onAddTask, onTaskClick,
 }: BoardContentProps) {
     const [activeTask, setActiveTask] = useState<Task | null>(null);
-    const queryClient = useQueryClient();
-
     const dragStartColumnRef = useRef<string | null>(null);
 
     const sensors = useSensors(
@@ -66,31 +50,11 @@ export default function BoardContent({
         }
     };
 
-    const handleDragOver = ({ active, over }: DragOverEvent) => {
-        if (!over) return;
-
-        const activeId = String(active.id);
-        const overId = String(over.id);
-
-        const activeTask = tasks.find((t) => t.id === activeId);
-        if (!activeTask) return;
-
-        const targetColumnId = findColumnId(overId);
-        if (!targetColumnId || activeTask.column_id === targetColumnId) return;
-
-        queryClient.setQueryData<Task[]>(['tasks', boardId], (old = []) =>
-            old.map((t) =>
-                t.id === activeId ? { ...t, column_id: targetColumnId } : t
-            )
-        );
-    };
-
     const handleDragEnd = async ({ active, over }: DragEndEvent) => {
         setActiveTask(null);
 
         const originalColumnId = dragStartColumnRef.current;
         dragStartColumnRef.current = null;
-
         if (!over || !originalColumnId) return;
 
         const overId = String(over.id);
@@ -104,23 +68,13 @@ export default function BoardContent({
             t.id === activeTask.id ? { ...t, column_id: originalColumnId } : t
         );
 
-        const result = reorderTasks(
-            tasksWithOriginal,
-            String(active.id),
-            overId,
-            targetColumnId
-        );
+        const result = reorderTasks(tasksWithOriginal, String(active.id), overId, targetColumnId);
         if (!result) return;
 
-        const previous = queryClient.getQueryData<Task[]>(['tasks', boardId]);
-        queryClient.setQueryData(['tasks', boardId], result.newTasks);
-
-        try {
-            await updateTasksBulk(result.updates);
-        } catch (err) {
-            console.error('Reorder failed:', err);
-            if (previous) queryClient.setQueryData(['tasks', boardId], previous);
-        }
+        await updateTasksBulk({
+            updates: result.updates,
+            newTasks: result.newTasks,
+        });
     };
 
     return (
@@ -128,7 +82,6 @@ export default function BoardContent({
             sensors={sensors}
             collisionDetection={closestCorners}
             onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
         >
             <button
