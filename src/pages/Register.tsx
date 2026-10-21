@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import AuthForm from '../components/auth/AuthForm';
 import type { RegisterFormData } from '../schemas/auth.schema';
+import { notifyError } from '../utils/toast';
 
 export default function Register() {
     const [isLoading, setIsLoading] = useState(false);
@@ -10,7 +11,6 @@ export default function Register() {
     const navigate = useNavigate();
 
     const handleRegister = async (data: RegisterFormData) => {
-        if (!('name' in data)) return;
         try {
             setIsLoading(true);
             setError(null);
@@ -24,8 +24,22 @@ export default function Register() {
                 },
             });
 
-            if (signUpError) throw signUpError;
-            if (!authData.user) throw new Error('Registration failed');
+            if (signUpError) {
+                setError(signUpError.message);
+                notifyError(signUpError, 'Registration failed');
+                return;
+            }
+
+            if (!authData.user) {
+                throw new Error('Registration failed');
+            }
+
+            if (authData.user.identities?.length === 0) {
+                const msg = 'This email is already registered. Please sign in instead.';
+                setError(msg);
+                notifyError(new Error(msg), 'Registration failed');
+                return;
+            }
 
             if (authData.user.confirmed_at) {
                 navigate('/boards');
@@ -34,6 +48,7 @@ export default function Register() {
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+            notifyError(err, 'Registration failed');
         } finally {
             setIsLoading(false);
         }

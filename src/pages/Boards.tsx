@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useBoards } from '../hooks/useBoards';
 import CreateBoardModal from '../components/boards/CreateBoardModal';
 import BoardItem from '../components/boards/BoardItem';
+import { notifyError, notifySuccess } from '../utils/toast';
 
 export default function Boards() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,9 +26,10 @@ export default function Boards() {
         setDeletingId(boardId);
         try {
             await deleteBoard(boardId);
+            notifySuccess('Board deleted');
         } catch (err) {
             console.error('Failed to delete board:', err);
-            alert('Failed to delete board');
+            notifyError(err, "Couldn't delete board");
         } finally {
             setDeletingId(null);
         }

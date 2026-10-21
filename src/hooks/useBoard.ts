@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../services/supabaseClient';
+import { useMemo } from 'react';
 
 export const fetchBoard = async (boardId: string) => {
     const { data, error } = await supabase
@@ -37,19 +38,31 @@ export const useBoard = (boardId: string) => {
         queryKey: ['board', boardId],
         queryFn: () => fetchBoard(boardId),
         enabled: !!boardId,
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     const columnsQuery = useQuery({
         queryKey: ['columns', boardId],
         queryFn: () => fetchColumns(boardId),
         enabled: !!boardId,
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
-    const columnIds = columnsQuery.data?.map(c => c.id) || [];
+    const columnIds = useMemo(
+        () => columnsQuery.data?.map((c) => c.id) ?? [],
+        [columnsQuery.data]
+    );
     const tasksQuery = useQuery({
         queryKey: ['tasks', boardId],
         queryFn: () => fetchTasks(columnIds),
         enabled: !!boardId && columnIds.length > 0,
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
     });
 
     return {

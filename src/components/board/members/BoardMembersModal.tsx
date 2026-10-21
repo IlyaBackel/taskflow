@@ -5,6 +5,7 @@ import Modal from '../../shared/Modal';
 import MemberSearch from './MemberSearch';
 import MemberList from './MemberList';
 import type { Profile } from '../../../types/profile';
+import { notifyError, notifySuccess } from '../../../utils/toast';
 
 interface BoardMembersModalProps {
     isOpen: boolean;
@@ -45,21 +46,30 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
     );
 
     const handleAdd = async (userId: string) => {
-        await addMember({ userId });
-        setSearchResults([]);
+        try {
+            await addMember({ userId });
+            notifySuccess('Member added');
+            setSearchResults([]);
+        } catch (err) {
+            notifyError(err, "Couldn't add member");
+        }
     };
 
     const handleRemove = async (memberId: string, memberUserId: string, memberRole: string) => {
         if (memberRole === 'owner') {
-            alert('Cannot remove the board owner.');
+            notifyError(new Error('Cannot remove the board owner'));
             return;
         }
         if (memberUserId === user?.id) {
-            alert('You cannot remove yourself.');
+            notifyError(new Error('You cannot remove yourself'));
             return;
         }
-        if (window.confirm('Remove this member?')) {
+        if (!window.confirm('Remove this member?')) return;
+        try {
             await removeMember(memberId);
+            notifySuccess('Member removed');
+        } catch (err) {
+            notifyError(err, "Couldn't remove member");
         }
     };
 

@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import { supabase } from '../../services/supabaseClient';
 import ProfileAvatar from '../shared/ProfileAvatar';
 import type { Profile } from '../../types/profile';
+import { notifyError, notifySuccess } from '../../utils/toast';
 
 interface AvatarUploadProps {
     userId: string;
@@ -17,7 +18,7 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onUploadSuccess
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
-            alert('Please upload an image (max 5MB)');
+            notifyError('Please upload an image (max 5MB)');
             return;
         }
 
@@ -32,8 +33,9 @@ export default function AvatarUpload({ userId, currentAvatarUrl, onUploadSuccess
             const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
             setPreviewUrl(publicUrl);
             onUploadSuccess(publicUrl);
-        } catch {
-            alert('Upload failed');
+            notifySuccess('Image uploaded');
+        } catch (err) {
+            notifyError(err, "Couldn't upload image");
         } finally {
             setUploading(false);
             e.target.value = '';

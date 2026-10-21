@@ -1,33 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchBoards, createBoard, deleteBoard } from '../services/boardService';
-import { supabase } from '../services/supabaseClient';
-import { useEffect, useState } from 'react';
-import type { User } from '@supabase/supabase-js';
+import { useUserData } from './useUserData';
+import { notifyError } from '../utils/toast';
 import type { Board } from '../types/board';
 
 export const useBoards = () => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loadingUser, setLoadingUser] = useState(true);
+    const { user, isLoading: loadingUser } = useUserData();
     const queryClient = useQueryClient();
-
-    useEffect(() => {
-        const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-            setLoadingUser(false);
-        };
-        getSession();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                setUser(session?.user ?? null);
-            }
-        );
-        return () => subscription.unsubscribe();
-    }, []);
+    const queryKey = ['boards', user?.id];
 
     const { data: boards, isLoading, error } = useQuery<Board[]>({
-        queryKey: ['boards', user?.id],
+        queryKey,
         queryFn: () => fetchBoards(user!.id),
         enabled: !!user && !loadingUser,
     });
@@ -38,7 +21,10 @@ export const useBoards = () => {
             return createBoard(title, user.id, coverImage);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['boards', user?.id] });
+            queryClient.invalidateQueries({ queryKey });
+        },
+        onError: (err) => {
+            notifyError(err, "Couldn't create board");
         },
     });
 
@@ -48,7 +34,10 @@ export const useBoards = () => {
             return deleteBoard(boardId);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['boards', user?.id] });
+            queryClient.invalidateQueries({ queryKey });
+        },
+        onError: (err) => {
+            notifyError(err, "Couldn't delete board");
         },
     });
 

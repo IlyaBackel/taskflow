@@ -1,11 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchBoardMembers, addBoardMember, removeBoardMember, searchUsersByEmail } from '../services/memberService';
+import {
+    fetchBoardMembers,
+    addBoardMember,
+    removeBoardMember,
+    searchUsersByEmail,
+} from '../services/memberService';
+import { notifyError } from '../utils/toast';
 
 export const useBoardMembers = (boardId: string) => {
     const queryClient = useQueryClient();
+    const queryKey = ['boardMembers', boardId];
 
     const { data: members, isLoading, error } = useQuery({
-        queryKey: ['boardMembers', boardId],
+        queryKey,
         queryFn: () => fetchBoardMembers(boardId),
         enabled: !!boardId,
     });
@@ -19,14 +26,20 @@ export const useBoardMembers = (boardId: string) => {
         mutationFn: ({ userId, role }: { userId: string; role?: 'member' | 'owner' }) =>
             addBoardMember(boardId, userId, role),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['boardMembers', boardId] });
+            queryClient.invalidateQueries({ queryKey });
+        },
+        onError: (err) => {
+            notifyError(err, "Couldn't add member");
         },
     });
 
     const removeMemberMutation = useMutation({
         mutationFn: (memberId: string) => removeBoardMember(memberId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['boardMembers', boardId] });
+            queryClient.invalidateQueries({ queryKey });
+        },
+        onError: (err) => {
+            notifyError(err, "Couldn't remove member");
         },
     });
 

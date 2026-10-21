@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent } from 'react';
 import { supabase } from '../../services/supabaseClient';
+import { notifyError, notifySuccess } from '../../utils/toast';
 
 interface BoardCoverUploadProps {
     userId: string;
@@ -29,8 +30,9 @@ export default function BoardCoverUpload({ userId, onUploadSuccess }: BoardCover
             const { data: { publicUrl } } = supabase.storage.from('boards').getPublicUrl(filePath);
             setPreviewUrl(publicUrl);
             onUploadSuccess(publicUrl);
-        } catch {
-            alert('Failed to upload image');
+            notifySuccess('Image uploaded');
+        } catch (err) {
+            notifyError(err, "Couldn't upload image");
         } finally {
             setUploading(false);
             e.target.value = '';

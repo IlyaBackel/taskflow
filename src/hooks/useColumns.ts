@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createColumn, updateColumn, deleteColumn } from '../services/columnService';
+import { notifyError } from '../utils/toast';
 import type { Column } from '../types/column';
 
 interface CreateColumnArgs {
@@ -44,10 +45,12 @@ export const useColumns = (boardId: string) => {
                 return old.map((c) => (c.id === ctx?.tempId ? created : c));
             });
         },
-        onError: (_err, _args, ctx) => {
+        onError: (err, _args, ctx) => {
             if (ctx?.previous) queryClient.setQueryData(queryKey, ctx.previous);
+            notifyError(err, "Couldn't create column");
         },
     });
+
     const updateMutation = useMutation({
         mutationFn: ({ columnId, updates }: UpdateColumnArgs) =>
             updateColumn(columnId, updates),
@@ -61,8 +64,9 @@ export const useColumns = (boardId: string) => {
 
             return { previous };
         },
-        onError: (_err, _args, ctx) => {
+        onError: (err, _args, ctx) => {
             if (ctx?.previous) queryClient.setQueryData(queryKey, ctx.previous);
+            notifyError(err, "Couldn't update column");
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey });
@@ -81,8 +85,9 @@ export const useColumns = (boardId: string) => {
 
             return { previous };
         },
-        onError: (_err, _columnId, ctx) => {
+        onError: (err, _columnId, ctx) => {
             if (ctx?.previous) queryClient.setQueryData(queryKey, ctx.previous);
+            notifyError(err, "Couldn't delete column");
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey });

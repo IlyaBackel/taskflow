@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createTask, updateTask, deleteTask, updateTasksBulk } from '../services/taskService';
 import { useUserData } from './useUserData';
 import type { Priority, Task } from '../types/task';
+import { notifyError } from '../utils/toast';
 
 interface CreateTaskArgs {
     columnId: string;
@@ -63,8 +64,9 @@ export const useTasks = (boardId: string) => {
                 return old.map((t) => (t.id === ctx?.tempId ? created : t));
             });
         },
-        onError: (_err, _args, ctx) => {
+        onError: (err, _, ctx) => {
             if (ctx?.previous) queryClient.setQueryData(queryKey, ctx.previous);
+            notifyError(err, "Couldn't create task");
         },
     });
 
@@ -78,8 +80,9 @@ export const useTasks = (boardId: string) => {
             );
             return { previous };
         },
-        onError: (_, __, context) => {
+        onError: (err, _, context) => {
             if (context?.previous) queryClient.setQueryData(queryKey, context.previous);
+            notifyError(err, "Couldn't update task");
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey });
@@ -96,8 +99,9 @@ export const useTasks = (boardId: string) => {
             );
             return { previous };
         },
-        onError: (_, __, context) => {
+        onError: (err, _, context) => {
             if (context?.previous) queryClient.setQueryData(queryKey, context.previous);
+            notifyError(err, "Couldn't delete task");
         },
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey });
@@ -110,16 +114,14 @@ export const useTasks = (boardId: string) => {
             await queryClient.cancelQueries({ queryKey });
             const previous = queryClient.getQueryData<Task[]>(queryKey);
 
-            // Оптимистично ставим новый порядок, чтобы карточка не залипала при дропе
             queryClient.setQueryData<Task[]>(queryKey, newTasks);
 
             return { previous };
         },
-        onError: (_, __, context) => {
-            // Если сервер вернул ошибку, откатываемся к старой позиции
+        onError: (err, _, context) => {
             if (context?.previous) queryClient.setQueryData(queryKey, context.previous);
+            notifyError(err, "Task couldn't be moved. Previous order restored.");
         },
-        //onSettled УДАЛЕН — кэш обновит подписка Supabase
     });
     return {
         createTask: createMutation.mutateAsync,
