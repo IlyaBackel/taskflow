@@ -8,6 +8,7 @@ import TaskCard from '../task/TaskCard';
 import type { Column as ColumnType } from '../../types/column';
 import type { Task } from '../../types/task';
 import { reorderTasks } from '../../utils/reorderTasks';
+import SectionErrorBoundary from '../shared/SectionErrorBoundary';
 
 interface BoardContentProps {
     boardId: string;
@@ -93,17 +94,22 @@ export default function BoardContent({
 
             <div className="flex gap-4 overflow-x-auto pb-4 items-start">
                 {columns.map((column) => (
-                    <Column
+                    <SectionErrorBoundary
                         key={column.id}
-                        column={column}
-                        tasks={tasks
-                            .filter((t) => t.column_id === column.id)
-                            .sort(byPosition)}
-                        onRename={onRenameColumn}
-                        onDelete={onDeleteColumn}
-                        onAddTask={() => onAddTask(column.id)}
-                        onTaskClick={onTaskClick}
-                    />
+                        fallbackTitle={`Column "${column.title}" failed`}
+                        resetKeys={[column.id]}
+                    >
+                        <Column
+                            column={column}
+                            tasks={tasks
+                                .filter((t) => t.column_id === column.id)
+                                .sort(byPosition)}
+                            onRename={onRenameColumn}
+                            onDelete={onDeleteColumn}
+                            onAddTask={() => onAddTask(column.id)}
+                            onTaskClick={onTaskClick}
+                        />
+                    </SectionErrorBoundary>
                 ))}
             </div>
 

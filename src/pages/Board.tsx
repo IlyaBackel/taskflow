@@ -9,6 +9,9 @@ import BoardContent from '../components/board/BoardContent';
 import CreateColumnModal from '../components/board/CreateColumnModal';
 import BoardMembersModal from '../components/board/members/BoardMembersModal';
 import TaskFormModal from '../components/task/TaskFormModal';
+import SectionErrorBoundary from '../components/shared/SectionErrorBoundary';
+import ErrorState from '../components/shared/ErrorState';
+import { BoardSkeleton } from '../components/shared/LoadingSkeleton';
 import type { Task } from '../types/task';
 import type { TaskFormData } from '../schemas/task.schema';
 
@@ -19,9 +22,17 @@ export default function Board() {
 
     useRealtimeBoard(id);
 
-    const { createColumn, updateColumn, deleteColumn, isCreating: isCreatingColumn } = useColumns(id!);
+    const { createColumn, updateColumn, deleteColumn, isCreating: isCreatingColumn } =
+        useColumns(id!);
 
-    const { createTask, updateTask, updateTasksBulk, deleteTask, isCreating: isCreatingTask, isUpdating } = useTasks(id!);
+    const {
+        createTask,
+        updateTask,
+        updateTasksBulk,
+        deleteTask,
+        isCreating: isCreatingTask,
+        isUpdating,
+    } = useTasks(id!);
 
     const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
     const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
@@ -29,10 +40,15 @@ export default function Board() {
     const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-    if (isLoading) return <div className="p-4">Loading board...</div>;
-    if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
-    if (!board || !id) return <div className="p-4">Board not found</div>;
-
+    if (isLoading) return <BoardSkeleton />;
+    if (error)
+        return (
+            <ErrorState
+                message={error.message}
+                onRetry={() => window.location.reload()}
+            />
+        );
+    if (!board || !id) return <ErrorState message="Board not found" />;
 
     const handleAddColumn = async (title: string, color: string) => {
         await createColumn({ title, position: columns.length, color });
@@ -93,17 +109,24 @@ export default function Board() {
                 />
             </div>
 
-            <BoardContent
-                boardId={board.id}
-                columns={columns}
-                tasks={tasks}
-                updateTasksBulk={updateTasksBulk}
-                onAddColumnClick={() => setIsColumnModalOpen(true)}
-                onRenameColumn={(colId, title) => updateColumn({ columnId: colId, updates: { title } })}
-                onDeleteColumn={deleteColumn}
-                onAddTask={handleOpenCreateTask}
-                onTaskClick={setSelectedTask}
-            />
+            <SectionErrorBoundary
+                fallbackTitle="Board couldn't be displayed"
+                resetKeys={[board.id]}
+            >
+                <BoardContent
+                    boardId={board.id}
+                    columns={columns}
+                    tasks={tasks}
+                    updateTasksBulk={updateTasksBulk}
+                    onAddColumnClick={() => setIsColumnModalOpen(true)}
+                    onRenameColumn={(colId, title) =>
+                        updateColumn({ columnId: colId, updates: { title } })
+                    }
+                    onDeleteColumn={deleteColumn}
+                    onAddTask={handleOpenCreateTask}
+                    onTaskClick={setSelectedTask}
+                />
+            </SectionErrorBoundary>
 
             <CreateColumnModal
                 isOpen={isColumnModalOpen}
@@ -112,31 +135,46 @@ export default function Board() {
                 isCreating={isCreatingColumn}
             />
 
-            <BoardMembersModal
-                isOpen={isMembersModalOpen}
-                onClose={() => setIsMembersModalOpen(false)}
-                boardId={board.id}
-            />
+            <SectionErrorBoundary
+                fallbackTitle="Members list failed"
+                resetKeys={[board.id]}
+            >
+                <BoardMembersModal
+                    isOpen={isMembersModalOpen}
+                    onClose={() => setIsMembersModalOpen(false)}
+                    boardId={board.id}
+                />
+            </SectionErrorBoundary>
 
-            <TaskFormModal
-                isOpen={isCreateTaskModalOpen}
-                onClose={handleCloseCreateTask}
-                boardId={board.id}
-                mode="create"
-                onSubmit={handleCreateTask}
-                isLoading={isCreatingTask}
-            />
+            <SectionErrorBoundary
+                fallbackTitle="Task form failed"
+                resetKeys={[isCreateTaskModalOpen]}
+            >
+                <TaskFormModal
+                    isOpen={isCreateTaskModalOpen}
+                    onClose={handleCloseCreateTask}
+                    boardId={board.id}
+                    mode="create"
+                    onSubmit={handleCreateTask}
+                    isLoading={isCreatingTask}
+                />
+            </SectionErrorBoundary>
 
-            <TaskFormModal
-                isOpen={!!selectedTask}
-                onClose={() => setSelectedTask(null)}
-                boardId={board.id}
-                mode="edit"
-                task={selectedTask}
-                onSubmit={handleSaveTask}
-                onDelete={handleDeleteTask}
-                isLoading={isUpdating}
-            />
+            <SectionErrorBoundary
+                fallbackTitle="Task form failed"
+                resetKeys={[selectedTask?.id]}
+            >
+                <TaskFormModal
+                    isOpen={!!selectedTask}
+                    onClose={() => setSelectedTask(null)}
+                    boardId={board.id}
+                    mode="edit"
+                    task={selectedTask}
+                    onSubmit={handleSaveTask}
+                    onDelete={handleDeleteTask}
+                    isLoading={isUpdating}
+                />
+            </SectionErrorBoundary>
         </div>
     );
 }

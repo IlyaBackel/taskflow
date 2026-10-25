@@ -7,6 +7,7 @@ import TaskFormFields from './TaskFormFields';
 import type { Task } from '../../types/task';
 import TaskFormButtons from './TaskFormButtons';
 import CommentsSection from './comments/CommentsSection';
+import SectionErrorBoundary from '../shared/SectionErrorBoundary';
 
 interface TaskFormModalProps {
     isOpen: boolean;
@@ -101,7 +102,14 @@ export default function TaskFormModal({
                     />
                 </form>
 
-                {mode === 'edit' && task && <CommentsSection taskId={task.id} />}
+                {mode === 'edit' && task && (
+                    <SectionErrorBoundary
+                        fallbackTitle="Comments couldn't be loaded"
+                        resetKeys={[task.id]}
+                    >
+                        <CommentsSection taskId={task.id} />
+                    </SectionErrorBoundary>
+                )}
             </div>
         </Modal>
     );
