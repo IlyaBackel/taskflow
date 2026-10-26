@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
+import RouteErrorFallback from './RouteErrorFallback';
 import PageLoader from './PageLoader';
 
 const Login = lazy(() => import('../pages/Login'));
@@ -12,6 +13,7 @@ const Boards = lazy(() => import('../pages/Boards'));
 const ConfirmEmail = lazy(() => import('../pages/ConfirmEmail'));
 const Profile = lazy(() => import('../pages/Profile'));
 const Board = lazy(() => import('../pages/Board'));
+const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 const withSuspense = (element: React.ReactNode) => (
     <Suspense fallback={<PageLoader />}>{element}</Suspense>
@@ -25,6 +27,7 @@ export const routes = createBrowserRouter([
                 <Login />
             </PublicRoute>
         ),
+        errorElement: <RouteErrorFallback />,
     },
     {
         path: '/register',
@@ -33,10 +36,12 @@ export const routes = createBrowserRouter([
                 <Register />
             </PublicRoute>
         ),
+        errorElement: <RouteErrorFallback />,
     },
     {
         path: '/confirm-email',
         element: withSuspense(<ConfirmEmail />),
+        errorElement: <RouteErrorFallback />,
     },
     {
         element: (
@@ -44,11 +49,28 @@ export const routes = createBrowserRouter([
                 <MainLayout />
             </ProtectedRoute>
         ),
+        errorElement: <RouteErrorFallback />,
         children: [
             { path: '/', element: <Navigate to="/boards" replace /> },
-            { path: '/boards', element: withSuspense(<Boards />) },
-            { path: '/profile', element: withSuspense(<Profile />) },
-            { path: '/board/:id', element: withSuspense(<Board />) },
+            {
+                path: '/boards',
+                element: withSuspense(<Boards />),
+                errorElement: <RouteErrorFallback />,
+            },
+            {
+                path: '/profile',
+                element: withSuspense(<Profile />),
+                errorElement: <RouteErrorFallback />,
+            },
+            {
+                path: '/board/:id',
+                element: withSuspense(<Board />),
+                errorElement: <RouteErrorFallback />,
+            },
         ],
+    },
+    {
+        path: '*',
+        element: withSuspense(<NotFoundPage />),
     },
 ]);
