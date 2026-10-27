@@ -80,9 +80,9 @@ export default function TaskFormModal({
     const title = mode === 'create' ? 'Create Task' : 'Task Details';
 
     return (
-        <Modal onClose={onClose}>
-            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4 text-primary-text">
+        <Modal onClose={onClose} labelledBy="task-modal-title">
+            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full">
+                <h2 id="task-modal-title" className="text-xl font-bold mb-4 text-primary-text">
                     {title}
                 </h2>
 

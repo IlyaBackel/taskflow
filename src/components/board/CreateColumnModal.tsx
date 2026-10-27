@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Input from '../shared/Input';
+import Modal from '../shared/Modal';
 import { COLORS } from '../../constants/colors';
 
 interface CreateColumnModalProps {
@@ -30,9 +31,12 @@ export default function CreateColumnModal({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <Modal onClose={onClose} labelledBy="create-column-title">
             <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-md">
-                <h2 className="text-xl font-bold mb-4 text-primary-text">
+                <h2
+                    id="create-column-title"
+                    className="text-xl font-bold mb-4 text-primary-text"
+                >
                     Add New Column
                 </h2>
                 <form onSubmit={handleSubmit}>
@@ -54,11 +58,13 @@ export default function CreateColumnModal({
                                     key={c}
                                     type="button"
                                     className={`w-8 h-8 rounded-full border-2 ${color === c
-                                        ? 'border-black dark:border-white'
-                                        : 'border-transparent'
+                                            ? 'border-black dark:border-white'
+                                            : 'border-transparent'
                                         }`}
                                     style={{ backgroundColor: c }}
                                     onClick={() => setColor(c)}
+                                    aria-label={`Select color ${c}`}
+                                    aria-pressed={color === c}
                                 />
                             ))}
                         </div>
@@ -81,6 +87,6 @@ export default function CreateColumnModal({
                     </div>
                 </form>
             </div>
-        </div>
+        </Modal>
     );
 }

@@ -76,9 +76,12 @@ export default function BoardMembersModal({ isOpen, onClose, boardId }: BoardMem
     if (!isOpen) return null;
 
     return (
-        <Modal onClose={onClose}>
+        <Modal onClose={onClose} labelledBy="members-modal-title">
             <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-md">
-                <h2 className="text-xl font-bold mb-4 text-primary-text">
+                <h2
+                    id="members-modal-title"
+                    className="text-xl font-bold mb-4 text-primary-text"
+                >
                     Board Members
                 </h2>
 

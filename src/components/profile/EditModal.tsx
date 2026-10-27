@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import Modal from '../shared/Modal';
 import EditProfileForm from './EditProfileForm';
 import { updateProfile } from '../../services/profileService';
+import { notifyError } from '../../utils/toast';
 import type { ProfileFormData } from '../../schemas/profile.schema';
 
 interface EditModalProps {
@@ -36,6 +37,7 @@ export default function EditModal({
             onClose();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to update profile');
+            notifyError(err, "Couldn't update profile");
         } finally {
             setIsLoading(false);
         }
@@ -44,9 +46,14 @@ export default function EditModal({
     if (!isOpen) return null;
 
     return (
-        <Modal onClose={onClose}>
-            <div className="p-6 max-w-md w-full rounded-lg shadow-xl">
-                <h2 className="text-2xl font-bold mb-4 text-primary-text">Edit Profile</h2>
+        <Modal onClose={onClose} labelledBy="edit-profile-title">
+            <div className="bg-card-bg p-6 max-w-md w-full rounded-lg shadow-xl">
+                <h2
+                    id="edit-profile-title"
+                    className="text-2xl font-bold mb-4 text-primary-text"
+                >
+                    Edit Profile
+                </h2>
                 {error && (
                     <div className="p-3 text-sm bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md mb-4">
                         {error}

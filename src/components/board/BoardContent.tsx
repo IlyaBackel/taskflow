@@ -1,8 +1,16 @@
 import { useState, useRef } from 'react';
 import {
-    DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners,
-    type DragStartEvent, type DragEndEvent,
+    DndContext,
+    DragOverlay,
+    PointerSensor,
+    KeyboardSensor,
+    useSensor,
+    useSensors,
+    closestCorners,
+    type DragStartEvent,
+    type DragEndEvent,
 } from '@dnd-kit/core';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import Column from './column/Column';
 import TaskCard from '../task/TaskCard';
 import type { Column as ColumnType } from '../../types/column';
@@ -28,14 +36,23 @@ interface BoardContentProps {
 const byPosition = (a: Task, b: Task) => a.position - b.position;
 
 export default function BoardContent({
-    columns, tasks, updateTasksBulk,
-    onAddColumnClick, onRenameColumn, onDeleteColumn, onAddTask, onTaskClick,
+    columns,
+    tasks,
+    updateTasksBulk,
+    onAddColumnClick,
+    onRenameColumn,
+    onDeleteColumn,
+    onAddTask,
+    onTaskClick,
 }: BoardContentProps) {
     const [activeTask, setActiveTask] = useState<Task | null>(null);
     const dragStartColumnRef = useRef<string | null>(null);
 
     const sensors = useSensors(
-        useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
     );
 
     const findColumnId = (id: string): string | null => {
@@ -84,10 +101,49 @@ export default function BoardContent({
             collisionDetection={closestCorners}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            accessibility={{
+                announcements: {
+                    onDragStart({ active }) {
+                        const task = tasks.find((t) => t.id === active.id);
+                        return `Picked up task ${task?.title ?? active.id}.`;
+                    },
+                    onDragOver({ active, over }) {
+                        const task = tasks.find((t) => t.id === active.id);
+                        const overTask = tasks.find((t) => t.id === over?.id);
+                        const overColumn = columns.find((c) => c.id === over?.id);
+
+                        if (overColumn) {
+                            return `Task ${task?.title ?? active.id} is over column ${overColumn.title}.`;
+                        }
+                        if (overTask) {
+                            return `Task ${task?.title ?? active.id} is over task ${overTask.title}.`;
+                        }
+                        return `Task ${task?.title ?? active.id} is no longer over a droppable area.`;
+                    },
+                    onDragEnd({ active, over }) {
+                        const task = tasks.find((t) => t.id === active.id);
+                        const overTask = tasks.find((t) => t.id === over?.id);
+                        const overColumn = columns.find((c) => c.id === over?.id);
+
+                        if (overColumn) {
+                            return `Task ${task?.title ?? active.id} dropped into column ${overColumn.title}.`;
+                        }
+                        if (overTask) {
+                            return `Task ${task?.title ?? active.id} dropped over task ${overTask.title}.`;
+                        }
+                        return `Task ${task?.title ?? active.id} dropped.`;
+                    },
+                    onDragCancel({ active }) {
+                        const task = tasks.find((t) => t.id === active.id);
+                        return `Dragging cancelled. Task ${task?.title ?? active.id} returned to its original position.`;
+                    },
+                },
+            }}
         >
             <button
                 onClick={onAddColumnClick}
                 className="my-5 lg:w-20 lg:h-20 w-10 h-10 flex items-center cursor-pointer justify-center text-4xl text-secondary-text bg-card-bg rounded-full shadow border border-border-primary transition-colors hover:bg-border-primary"
+                aria-label="Add new column"
             >
                 +
             </button>

@@ -34,9 +34,11 @@ export default function CreateBoardModal({ isOpen, onClose }: CreateBoardModalPr
     if (!isOpen) return null;
 
     return (
-        <Modal onClose={onClose}>
-            <div className="bg-card-bg p-6 border-border-primary max-w-md w-full rounded-lg shadow-xl">
-                <h2 className="text-2xl font-bold mb-4 text-primary-text">Create Board</h2>
+        <Modal onClose={onClose} labelledBy="create-board-title">
+            <div className="bg-card-bg p-6 ...">
+                <h2 id="create-board-title" className="text-2xl font-bold mb-4 text-primary-text">
+                    Create Board
+                </h2>
                 {error && (
                     <div className="p-3 text-sm bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md mb-4">
                         {error}
