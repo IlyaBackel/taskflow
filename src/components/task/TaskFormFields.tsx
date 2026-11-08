@@ -13,7 +13,6 @@ interface TaskFormFieldsProps {
 
 export default function TaskFormFields({ register, control, errors, boardId }: TaskFormFieldsProps) {
     const { members } = useBoardMembers(boardId);
-    const today = new Date().toISOString().split('T')[0];
 
     return (
         <>
@@ -53,17 +52,16 @@ export default function TaskFormFields({ register, control, errors, boardId }: T
 
             <div>
                 <label className="block text-sm font-medium mb-1 text-primary-text">
-                    Deadline *
+                    Deadline
                 </label>
                 <input
                     type="date"
-                    min={today}
                     {...register('due_date')}
                     className="w-full px-3 py-2 rounded-lg border border-border-primary bg-card-bg text-primary-text focus:outline-none focus:ring-2 focus:ring-primary"
                 />
-                {errors.due_date && (
-                    <p className="text-sm text-red-500 mt-1">{errors.due_date.message}</p>
-                )}
+                <p className="text-xs text-secondary-text mt-1">
+                    Past dates are allowed. Overdue tasks are highlighted on the board.
+                </p>
             </div>
 
             <Controller

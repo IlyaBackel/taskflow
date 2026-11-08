@@ -17,7 +17,7 @@ export default function AssigneeSelect({
     return (
         <div>
             <label className="block text-sm font-medium mb-1 text-primary-text">
-                Assignee *
+                Assignee
             </label>
             <select
                 value={value}
@@ -25,7 +25,7 @@ export default function AssigneeSelect({
                 className={`w-full px-3 py-2 rounded-lg border ${error ? 'border-red-500' : 'border-border-primary'
                     } bg-card-bg text-primary-text focus:outline-none focus:ring-2 focus:ring-primary`}
             >
-                <option value="">Select assignee...</option>
+                <option value="">Unassigned</option>
                 {members.map((member) => {
                     const profile = member.profiles?.[0];
                     if (!profile) return null;
