@@ -8,4 +8,6 @@ export const taskSchema = z.object({
     assignee_id: z.string().optional().or(z.literal('')),
 });
 
+export type TaskFormInput = z.input<typeof taskSchema>;
+
 export type TaskFormData = z.infer<typeof taskSchema>;

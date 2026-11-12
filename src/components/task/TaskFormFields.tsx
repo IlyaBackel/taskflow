@@ -2,18 +2,24 @@ import { Controller, type UseFormRegister, type Control, type FieldErrors } from
 import Input from '../shared/Input';
 import AssigneeSelect from './AssigneeSelect';
 import { useBoardMembers } from '../../hooks/useBoardMembers';
-import type { TaskFormData } from '../../schemas/task.schema';
+import type { TaskFormInput } from '../../schemas/task.schema';
 
 interface TaskFormFieldsProps {
-    register: UseFormRegister<TaskFormData>;
-    control: Control<TaskFormData>;
-    errors: FieldErrors<TaskFormData>;
+    register: UseFormRegister<TaskFormInput>;
+    control: Control<TaskFormInput>;
+    errors: FieldErrors<TaskFormInput>;
     boardId: string;
 }
 
-export default function TaskFormFields({ register, control, errors, boardId }: TaskFormFieldsProps) {
+export default function TaskFormFields({
+    register,
+    control,
+    errors,
+    boardId,
+}: TaskFormFieldsProps) {
     const { members } = useBoardMembers(boardId);
 
+    const newLocal = "block text-sm font-medium mb-1 text-primary-text";
     return (
         <>
             <Input
@@ -25,7 +31,7 @@ export default function TaskFormFields({ register, control, errors, boardId }: T
             />
 
             <div>
-                <label className="block text-sm font-medium mb-1 text-primary-text">
+                <label className={newLocal}>
                     Description
                 </label>
                 <textarea

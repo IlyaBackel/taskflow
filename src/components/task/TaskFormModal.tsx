@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { taskSchema, type TaskFormData } from '../../schemas/task.schema';
+import { taskSchema, type TaskFormData, type TaskFormInput } from '../../schemas/task.schema';
 import Modal from '../shared/Modal';
 import TaskFormFields from './TaskFormFields';
 import type { Task } from '../../types/task';
 import TaskFormButtons from './TaskFormButtons';
 import CommentsSection from './comments/CommentsSection';
-import SectionErrorBoundary from '../shared/SectionErrorBoundary';
 
 interface TaskFormModalProps {
     isOpen: boolean;
@@ -30,13 +29,14 @@ export default function TaskFormModal({
     onDelete,
     isLoading,
 }: TaskFormModalProps) {
+    // 🔑 Второй generic — input, третий — output (что получает onSubmit)
     const {
         register,
         handleSubmit,
         control,
         reset,
         formState: { errors },
-    } = useForm<TaskFormData>({
+    } = useForm<TaskFormInput, unknown, TaskFormData>({
         resolver: zodResolver(taskSchema),
         defaultValues: {
             title: '',
@@ -81,7 +81,7 @@ export default function TaskFormModal({
 
     return (
         <Modal onClose={onClose} labelledBy="task-modal-title">
-            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full">
+            <div className="bg-card-bg p-6 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                 <h2 id="task-modal-title" className="text-xl font-bold mb-4 text-primary-text">
                     {title}
                 </h2>
@@ -102,14 +102,7 @@ export default function TaskFormModal({
                     />
                 </form>
 
-                {mode === 'edit' && task && (
-                    <SectionErrorBoundary
-                        fallbackTitle="Comments couldn't be loaded"
-                        resetKeys={[task.id]}
-                    >
-                        <CommentsSection taskId={task.id} />
-                    </SectionErrorBoundary>
-                )}
+                {mode === 'edit' && task && <CommentsSection taskId={task.id} />}
             </div>
         </Modal>
     );
